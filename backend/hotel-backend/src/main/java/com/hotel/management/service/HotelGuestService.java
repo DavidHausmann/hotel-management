@@ -28,10 +28,10 @@ public class HotelGuestService {
     }
 
     public List<HotelGuest> searchByDocument(String document) {
-        return hotelGuestRepository.findByDocument(document);
+        return hotelGuestRepository.findByDocumentContainingIgnoreCase(document);
     }
 
     public List<HotelGuest> searchByPhone(String phone) {
-        return hotelGuestRepository.findByPhone(phone);
+        return hotelGuestRepository.findByPhoneContainingIgnoreCase(phone);
     }
 }

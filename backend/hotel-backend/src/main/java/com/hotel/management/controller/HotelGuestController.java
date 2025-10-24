@@ -2,6 +2,7 @@ package com.hotel.management.controller;
 
 import com.hotel.management.model.HotelGuest;
 import com.hotel.management.service.HotelGuestService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +20,9 @@ public class HotelGuestController {
     }
 
     @PostMapping
-    public ResponseEntity<HotelGuest> save(@RequestBody HotelGuest hotelGuest) {
-        return ResponseEntity.ok(hotelGuestService.save(hotelGuest));
+    public ResponseEntity<HotelGuest> save(@Valid @RequestBody HotelGuest hotelGuest) {
+        HotelGuest saved = hotelGuestService.save(hotelGuest);
+        return ResponseEntity.ok(saved);
     }
 
     @GetMapping
