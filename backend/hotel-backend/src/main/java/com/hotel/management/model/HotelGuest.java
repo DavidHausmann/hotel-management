@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "hotel_guests")
+@Table(name = "hotel_guest")
 public class HotelGuest {
 
     @Id
@@ -25,7 +25,7 @@ public class HotelGuest {
     private String document;
 
     @NotBlank(message = "O telefone é obrigatório")
-    @Pattern(regexp = "^(\\(?\\d{2}\\)?\\s?)?(\\d{4,5}\\-?\\d{4})$", message = "O telefone deve estar em um formato válido")
+    @Pattern(regexp = "^(\\(?\\d{2}\\)?\\s?)?(9?\\d{4}-?\\d{4})$", message = "O telefone deve estar em um formato válido (ex: 11999999999 ou (11)99999-9999)")
     private String phone;
 
     private boolean hasCar;
