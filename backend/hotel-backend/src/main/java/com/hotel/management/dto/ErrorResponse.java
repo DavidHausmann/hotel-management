@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.List;
 
 @Data
 @Schema(description = "Standard error response")
@@ -22,6 +22,6 @@ public class ErrorResponse {
     @Schema(description = "Detailed message", example = "Validation failed for object 'hotelGuest'")
     private String message;
 
-    @Schema(description = "Optional additional details (field -> message)")
-    private Map<String, String> details;
+    @Schema(description = "Optional additional details as list of field errors")
+    private List<FieldError> details;
 }

@@ -1,0 +1,41 @@
+package com.hotel.management.exception;
+
+import com.hotel.management.controller.HotelGuestController;
+import com.hotel.management.dto.ErrorResponse;
+import org.junit.jupiter.api.Test;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.FieldError;
+
+import java.lang.reflect.Method;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class GlobalExceptionHandlerTest {
+
+    @Test
+    void handleValidationExceptions_should_return_structured_error_details() throws NoSuchMethodException {
+        GlobalExceptionHandler handler = new GlobalExceptionHandler();
+
+        // Build a BindingResult with one field error
+        BeanPropertyBindingResult binding = new BeanPropertyBindingResult(new Object(), "hotelGuest");
+        binding.addError(new FieldError("hotelGuest", "name", "must not be blank"));
+
+        // Obtain MethodParameter from controller 'save' method (first parameter)
+        Method method = HotelGuestController.class.getMethod("save", com.hotel.management.model.HotelGuest.class);
+        MethodParameter param = new MethodParameter(method, 0);
+
+        MethodArgumentNotValidException ex = new MethodArgumentNotValidException(param, binding);
+
+        var resp = handler.handleValidationExceptions(ex);
+
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        ErrorResponse body = resp.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.getDetails()).isNotEmpty();
+        assertThat(body.getDetails().get(0).getField()).isEqualTo("name");
+        assertThat(body.getDetails().get(0).getMessage()).isEqualTo("must not be blank");
+    }
+}

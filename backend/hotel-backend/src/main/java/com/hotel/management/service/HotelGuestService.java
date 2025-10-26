@@ -5,7 +5,6 @@ import com.hotel.management.repository.HotelGuestRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -21,29 +20,21 @@ public class HotelGuestService {
         return hotelGuestRepository.save(hotelGuest);
     }
 
-    public HotelGuest patch(Long id, Map<String, Object> updates) {
+    public HotelGuest patch(Long id, com.hotel.management.dto.HotelGuestPatchRequest updates) {
         Optional<HotelGuest> maybe = hotelGuestRepository.findById(id);
         HotelGuest existing = maybe.orElseThrow(() -> new IllegalArgumentException("HotelGuest not found: " + id));
 
-        if (updates.containsKey("name")) {
-            Object v = updates.get("name");
-            existing.setName(v == null ? null : v.toString());
+        if (updates.getName() != null) {
+            existing.setName(updates.getName());
         }
-        if (updates.containsKey("document")) {
-            Object v = updates.get("document");
-            existing.setDocument(v == null ? null : v.toString());
+        if (updates.getDocument() != null) {
+            existing.setDocument(updates.getDocument());
         }
-        if (updates.containsKey("phone")) {
-            Object v = updates.get("phone");
-            existing.setPhone(v == null ? null : v.toString());
+        if (updates.getPhone() != null) {
+            existing.setPhone(updates.getPhone());
         }
-        if (updates.containsKey("hasCar")) {
-            Object v = updates.get("hasCar");
-            if (v instanceof Boolean) {
-                existing.setHasCar((Boolean) v);
-            } else if (v != null) {
-                existing.setHasCar(Boolean.parseBoolean(v.toString()));
-            }
+        if (updates.getHasCar() != null) {
+            existing.setHasCar(updates.getHasCar());
         }
 
         return hotelGuestRepository.save(existing);

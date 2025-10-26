@@ -99,11 +99,11 @@ public class HotelGuestController {
     @PatchMapping("/{id}")
     public ResponseEntity<HotelGuest> patch(
             @Parameter(description = "ID of guest to update", required = true) @PathVariable Long id,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "JSON with fields to update. Allowed keys: name, document, phone, hasCar", content = @Content(mediaType = "application/json", examples = {
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Partial guest object. Provide only fields to update.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.HotelGuestPatchRequest.class), examples = {
                     @ExampleObject(name = "update-name", value = "{\"name\": \"Maria Silva\"}"),
                     @ExampleObject(name = "update-phone", value = "{\"phone\": \"(11)98888-7777\"}"),
                     @ExampleObject(name = "update-hasCar", value = "{\"hasCar\": true}")
-            })) @RequestBody java.util.Map<String, Object> updates) {
+            })) @RequestBody com.hotel.management.dto.HotelGuestPatchRequest updates) {
         HotelGuest updated = hotelGuestService.patch(id, updates);
         return ResponseEntity.ok(updated);
     }
