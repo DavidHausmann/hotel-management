@@ -44,4 +44,16 @@ public class HotelGuestController {
     public ResponseEntity<List<HotelGuest>> searchByPhone(@PathVariable String phone) {
         return ResponseEntity.ok(hotelGuestService.searchByPhone(phone));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        hotelGuestService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<HotelGuest> patch(@PathVariable Long id, @RequestBody java.util.Map<String, Object> updates) {
+        HotelGuest updated = hotelGuestService.patch(id, updates);
+        return ResponseEntity.ok(updated);
+    }
 }
