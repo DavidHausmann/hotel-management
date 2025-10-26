@@ -21,10 +21,6 @@ public class HotelGuestService {
         return hotelGuestRepository.save(hotelGuest);
     }
 
-    /**
-     * Apply partial updates to a HotelGuest identified by id.
-     * Only the keys present in the updates map will be applied.
-     */
     public HotelGuest patch(Long id, Map<String, Object> updates) {
         Optional<HotelGuest> maybe = hotelGuestRepository.findById(id);
         HotelGuest existing = maybe.orElseThrow(() -> new IllegalArgumentException("HotelGuest not found: " + id));
