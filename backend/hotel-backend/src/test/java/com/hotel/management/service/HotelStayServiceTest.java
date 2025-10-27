@@ -16,6 +16,8 @@ import org.mockito.stubbing.Answer;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.time.LocalDate;
+import com.hotel.management.dto.DashboardResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -128,5 +130,21 @@ public class HotelStayServiceTest {
         HotelStayResponse afterCheckout = service.checkOut(10L, checkout);
         assertThat(afterCheckout.getStatus()).isEqualTo(HotelStayStatus.CHECKED_OUT);
         assertThat(afterCheckout.getTotalAmount()).isGreaterThan(0.0);
+    }
+
+    @Test
+    void getDashboardMetrics_returns_expected_aggregates() {
+        // prepare repository mock responses
+        when(stayRepository.countPlannedOverlappingPeriod(any(LocalDate.class), any(LocalDate.class))).thenReturn(3L);
+        when(stayRepository.countByStatus(HotelStayStatus.CHECKED_IN)).thenReturn(2L);
+        when(stayRepository.sumNumberOfGuestsByStatus(HotelStayStatus.CHECKED_IN)).thenReturn(5L);
+        when(stayRepository.countWithCarByStatus(HotelStayStatus.CHECKED_IN)).thenReturn(1L);
+
+        DashboardResponse resp = service.getDashboardMetrics();
+
+        assertThat(resp.getTotalReservations()).isEqualTo(3L);
+        assertThat(resp.getTotalActiveCheckins()).isEqualTo(2L);
+        assertThat(resp.getTotalCurrentGuests()).isEqualTo(5L);
+        assertThat(resp.getTotalCurrentCars()).isEqualTo(1L);
     }
 }

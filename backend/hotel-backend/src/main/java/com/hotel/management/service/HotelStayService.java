@@ -137,6 +137,30 @@ public class HotelStayService {
     }
 
     /**
+     * Return aggregated dashboard metrics as requested by the frontend/home route.
+     */
+    public com.hotel.management.dto.DashboardResponse getDashboardMetrics() {
+        com.hotel.management.dto.DashboardResponse dto = new com.hotel.management.dto.DashboardResponse();
+
+        // current month start and end
+        java.time.LocalDate now = java.time.LocalDate.now();
+        java.time.LocalDate monthStart = now.withDayOfMonth(1);
+        java.time.LocalDate monthEnd = now.withDayOfMonth(now.lengthOfMonth());
+
+        Long reservations = stayRepository.countPlannedOverlappingPeriod(monthStart, monthEnd);
+        Long activeCheckins = stayRepository.countByStatus(HotelStayStatus.CHECKED_IN);
+        Long currentGuests = stayRepository.sumNumberOfGuestsByStatus(HotelStayStatus.CHECKED_IN);
+        Long currentCars = stayRepository.countWithCarByStatus(HotelStayStatus.CHECKED_IN);
+
+        dto.setTotalReservations(reservations == null ? 0L : reservations);
+        dto.setTotalActiveCheckins(activeCheckins == 0 ? 0L : activeCheckins);
+        dto.setTotalCurrentGuests(currentGuests == null ? 0L : currentGuests);
+        dto.setTotalCurrentCars(currentCars == null ? 0L : currentCars);
+
+        return dto;
+    }
+
+    /**
      * Calcula o custo total da estadia.
      */
     public double calculateStayCost(LocalDateTime checkin, LocalDateTime checkout, boolean hasCar) {
