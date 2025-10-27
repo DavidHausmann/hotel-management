@@ -31,7 +31,7 @@ public class HotelGuestController {
     @Operation(summary = "Create guest", description = "Create a new hotel guest record.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Guest created", content = @Content(mediaType = "application/json", schema = @Schema(implementation = HotelGuest.class), examples = @ExampleObject(value = "{\"id\":1,\"name\":\"João Silva\",\"document\":\"123.456.789-00\",\"phone\":\"(11)99999-9999\",\"hasCar\":true}"))),
-            @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class), examples = @ExampleObject(value = "{\"timestamp\": \"2025-10-26T11:00:00\", \"status\": 400, \"error\": \"Bad Request\", \"message\": \"Validation failed\", \"details\": {\"name\": \"must not be blank\", \"document\": \"invalid format (expected CPF/CNPJ)\", \"phone\": \"invalid phone number\"}}")))
+            @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class), examples = @ExampleObject(value = "{\"timestamp\": \"2025-10-26T11:00:00\", \"status\": 400, \"error\": \"Bad Request\", \"message\": \"Validation failed\", \"details\": [{\"field\": \"name\", \"message\": \"must not be blank\"}, {\"field\": \"document\", \"message\": \"invalid format (expected CPF/CNPJ)\"}, {\"field\": \"phone\", \"message\": \"invalid phone number\"}]}")))
     })
     @PostMapping
     public ResponseEntity<HotelGuest> save(
@@ -82,7 +82,7 @@ public class HotelGuestController {
     @Operation(summary = "Delete guest", description = "Delete a guest by ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Guest deleted"),
-            @ApiResponse(responseCode = "404", description = "Guest not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class), examples = @ExampleObject(value = "{\"timestamp\": \"2025-10-26T11:00:00\", \"status\": 404, \"error\": \"Not Found\", \"message\": \"Guest not found\", \"details\": {\"id\": \"no guest with id 123\"}}")))
+            @ApiResponse(responseCode = "404", description = "Guest not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class), examples = @ExampleObject(value = "{\"timestamp\": \"2025-10-26T11:00:00\", \"status\": 404, \"error\": \"Not Found\", \"message\": \"Guest not found\", \"details\": [{\"field\": \"id\", \"message\": \"no guest with id 123\"}]}")))
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
@@ -94,7 +94,7 @@ public class HotelGuestController {
     @Operation(summary = "Patch guest", description = "Partially update guest fields. Provide a JSON object with the fields to change.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Guest updated", content = @Content(mediaType = "application/json", schema = @Schema(implementation = HotelGuest.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class), examples = @ExampleObject(value = "{\"timestamp\": \"2025-10-26T11:00:00\", \"status\": 400, \"error\": \"Bad Request\", \"message\": \"Invalid input for patch\", \"details\": {\"hasCar\": \"must be boolean\", \"phone\": \"invalid format\"}}")))
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class), examples = @ExampleObject(value = "{\"timestamp\": \"2025-10-26T11:00:00\", \"status\": 400, \"error\": \"Bad Request\", \"message\": \"Invalid input for patch\", \"details\": [{\"field\": \"hasCar\", \"message\": \"must be boolean\"}, {\"field\": \"phone\", \"message\": \"invalid format\"}]}")))
     })
     @PatchMapping("/{id}")
     public ResponseEntity<HotelGuest> patch(
