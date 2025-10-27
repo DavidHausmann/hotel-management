@@ -10,6 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import static org.mockito.ArgumentMatchers.any;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -64,7 +67,36 @@ public class HotelStayServiceTest {
     void createReservation_guestNotFound_throws() {
         when(guestRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> service.createReservation(99L));
+        assertThrows(IllegalArgumentException.class, () -> service.createReservation(99L, null, null, null));
+    }
+
+    @Test
+    void createReservation_success_maps_planned_fields() {
+        HotelGuest guest = new HotelGuest();
+        guest.setId(2L);
+
+        when(guestRepository.findById(2L)).thenReturn(Optional.of(guest));
+
+        // Simulate repository assigning an ID on save and return the persisted entity
+        when(stayRepository.save(any(HotelStay.class))).thenAnswer(new Answer<HotelStay>() {
+            @Override
+            public HotelStay answer(InvocationOnMock invocation) {
+                HotelStay s = invocation.getArgument(0);
+                s.setId(123L);
+                return s;
+            }
+        });
+
+        java.time.LocalDate start = java.time.LocalDate.of(2025, 11, 1);
+        java.time.LocalDate end = java.time.LocalDate.of(2025, 11, 5);
+        Integer guests = 2;
+
+        HotelStayResponse resp = service.createReservation(2L, start, end, guests);
+
+        assertThat(resp.getId()).isEqualTo(123L);
+        assertThat(resp.getPlannedStartDate()).isEqualTo(start);
+        assertThat(resp.getPlannedEndDate()).isEqualTo(end);
+        assertThat(resp.getNumberOfGuests()).isEqualTo(guests);
     }
 
     @Test

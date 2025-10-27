@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -31,5 +32,17 @@ public class GlobalExceptionHandler {
         resp.setDetails(details);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resp);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
+        ErrorResponse resp = new ErrorResponse();
+        resp.setTimestamp(LocalDateTime.now());
+        resp.setStatus(org.springframework.http.HttpStatus.BAD_REQUEST.value());
+        resp.setError(org.springframework.http.HttpStatus.BAD_REQUEST.getReasonPhrase());
+        resp.setMessage(ex.getMessage());
+        resp.setDetails(Collections.emptyList());
+
+        return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST).body(resp);
     }
 }

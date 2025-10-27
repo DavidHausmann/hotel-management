@@ -38,8 +38,10 @@ public class HotelStayController {
     })
     @PostMapping("/reserve/{hotelGuestId}")
     public ResponseEntity<HotelStayResponse> createReservation(
-            @Parameter(description = "ID of the hotel guest to reserve for", required = true) @PathVariable Long hotelGuestId) {
-        HotelStayResponse saved = hotelStayService.createReservation(hotelGuestId);
+            @Parameter(description = "ID of the hotel guest to reserve for", required = true) @PathVariable Long hotelGuestId,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Reservation details: plannedStartDate, plannedEndDate, numberOfGuests", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"plannedStartDate\": \"2025-11-01\", \"plannedEndDate\": \"2025-11-05\", \"numberOfGuests\": 2}"))) @RequestBody com.hotel.management.dto.HotelStayCreateRequest request) {
+        HotelStayResponse saved = hotelStayService.createReservation(hotelGuestId, request.getPlannedStartDate(),
+                request.getPlannedEndDate(), request.getNumberOfGuests());
         return ResponseEntity.ok(saved);
     }
 

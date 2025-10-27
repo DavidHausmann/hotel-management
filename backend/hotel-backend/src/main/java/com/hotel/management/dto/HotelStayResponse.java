@@ -3,6 +3,7 @@ package com.hotel.management.dto;
 import com.hotel.management.model.HotelStayStatus;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Data
@@ -26,4 +27,13 @@ public class HotelStayResponse {
 
     @Schema(description = "Identifier of the associated hotel guest", example = "42")
     private Long hotelGuestId;
+
+    @Schema(description = "Planned start date for the reservation", example = "2025-11-01")
+    private LocalDate plannedStartDate;
+
+    @Schema(description = "Planned end date for the reservation", example = "2025-11-05")
+    private LocalDate plannedEndDate;
+
+    @Schema(description = "Number of guests for the reservation", example = "2")
+    private Integer numberOfGuests;
 }

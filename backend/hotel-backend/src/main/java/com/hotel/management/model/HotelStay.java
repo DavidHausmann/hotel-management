@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,6 +34,15 @@ public class HotelStay {
 
     @Schema(description = "Check-out timestamp", example = "2025-10-27T11:00:00")
     private LocalDateTime checkoutTime;
+
+    @Schema(description = "Planned start date for the reservation", example = "2025-11-01")
+    private LocalDate plannedStartDate;
+
+    @Schema(description = "Planned end date for the reservation", example = "2025-11-05")
+    private LocalDate plannedEndDate;
+
+    @Schema(description = "Number of guests for the reservation", example = "2")
+    private Integer numberOfGuests;
 
     @Enumerated(EnumType.STRING)
     @Schema(description = "Current status of the stay")

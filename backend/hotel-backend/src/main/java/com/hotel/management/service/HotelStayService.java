@@ -39,6 +39,9 @@ public class HotelStayService {
         if (stay.getHotelGuest() != null) {
             dto.setHotelGuestId(stay.getHotelGuest().getId());
         }
+        dto.setPlannedStartDate(stay.getPlannedStartDate());
+        dto.setPlannedEndDate(stay.getPlannedEndDate());
+        dto.setNumberOfGuests(stay.getNumberOfGuests());
         return dto;
     }
 
@@ -51,13 +54,18 @@ public class HotelStayService {
 
     // 1. Criar Reserva (RESERVED)
     @Transactional
-    public HotelStayResponse createReservation(Long hotelGuestId) {
+    public HotelStayResponse createReservation(Long hotelGuestId, java.time.LocalDate plannedStartDate,
+            java.time.LocalDate plannedEndDate, Integer numberOfGuests) {
         HotelGuest hotelGuest = hotelGuestRepository.findById(hotelGuestId)
                 .orElseThrow(() -> new IllegalArgumentException("Hóspede não encontrado: " + hotelGuestId));
 
         HotelStay stay = new HotelStay();
         stay.setHotelGuest(hotelGuest);
         stay.setStatus(HotelStayStatus.RESERVED);
+        stay.setPlannedStartDate(plannedStartDate);
+        stay.setPlannedEndDate(plannedEndDate);
+        stay.setNumberOfGuests(numberOfGuests);
+
         HotelStay saved = stayRepository.save(stay);
         return mapToResponse(saved);
     }
