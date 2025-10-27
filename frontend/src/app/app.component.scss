@@ -1,0 +1,58 @@
+.hotel__management__header {
+  height: 72px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 24px;
+  background-color: var(--hotel-management-primary);
+  padding: 16px 32px;
+  box-shadow: 1px 0 4px 2px rgba(0, 0, 0, 0.3);
+  .hotel__management__logo {
+    height: 40px;
+  }
+  .theme__select {
+    height: 32px;
+    width: 52px;
+    border-radius: 100px;
+    align-items: center;
+    justify-content: space-between;
+    display: flex;
+    padding: 8px;
+    position: absolute;
+    right: 32px;
+    cursor: pointer;
+    .theme__icon {
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+    }
+    .theme__icon--hidden {
+      display: none;
+    }
+  }
+  .theme__select--light {
+    background-color: #121212;
+    .theme__icon {
+      background-color: #ffffff;
+    }
+  }
+  .theme__select--dark {
+    background-color: #ffffff;
+    .theme__icon {
+      background-color: #121212;
+    }
+  }
+}
+.hotel__management__main {
+  height: calc(100vh - 72px);
+  padding: 40px 32px;
+}
+.dark__mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+.white__mode {
+  background-color: #ffffff;
+  color: #121212;
+}

@@ -1,0 +1,34 @@
+<header class="hotel__management__header">
+  <img
+    src="../assets/icons/hotel-logo.svg"
+    alt="Logo do aplicativo de gestão de hotelaria"
+    class="hotel__management__logo"
+  />
+  <div
+    class="theme__select"
+    [ngClass]="
+      themeService.isDarkMode() ? 'theme__select--dark' : 'theme__select--light'
+    "
+    (click)="themeService.toggleTheme()"
+  >
+    <img
+      src="/assets/icons/moon-icon.svg"
+      alt="Altera o tema padrão claro ou escuro"
+      class="theme__icon"
+      [ngClass]="{ 'theme__icon--hidden': themeService.isDarkMode() }"
+    />
+    <div *ngIf="themeService.isDarkMode()"></div>
+    <img
+      src="/assets/icons/sun-icon.svg"
+      alt="Altera o tema padrão claro ou escuro"
+      class="theme__icon"
+      [ngClass]="{ 'theme__icon--hidden': !themeService.isDarkMode() }"
+    />
+  </div>
+</header>
+<main
+  class="hotel__management__main custom__scroll"
+  [ngClass]="themeService.isDarkMode() ? 'dark__mode' : 'light__mode'"
+>
+  <router-outlet />
+</main>
