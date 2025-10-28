@@ -1,9 +1,25 @@
 <header class="hotel__management__header">
-  <img
-    src="../assets/icons/hotel-logo.svg"
-    alt="Logo do aplicativo de gestão de hotelaria"
-    class="hotel__management__logo"
-  />
+  <div class="hotel__management__header__actions">
+    <img
+      [src]="
+        isMenuOpen
+          ? 'assets/icons/close-icon.svg'
+          : 'assets/icons/menu-icon.svg'
+      "
+      alt="Abrir menu"
+      (click)="toggleMenu()"
+    />
+    <img
+      src="../assets/icons/hotel-logo.svg"
+      alt="Logo do aplicativo de gestão de hotelaria"
+      class="hotel__management__logo"
+    />
+    <div class="hotel__management__pages">
+      <a class="hotel__management__page" routerLink="/home">Home</a>
+      <a class="hotel__management__page" routerLink="/hospedes">Hóspedes</a>
+      <a class="hotel__management__page" routerLink="/reservas">Reservas</a>
+    </div>
+  </div>
   <div
     class="theme__select"
     [ngClass]="
@@ -32,3 +48,8 @@
 >
   <router-outlet />
 </main>
+<section class="hotel__management__menu" *ngIf="isMenuOpen">
+  <a class="hotel__management__page" routerLink="/home" (click)="isMenuOpen = false">Home</a>
+  <a class="hotel__management__page" routerLink="/hospedes" (click)="isMenuOpen = false">Hóspedes</a>
+  <a class="hotel__management__page" routerLink="/reservas" (click)="isMenuOpen = false">Reservas</a>
+</section>

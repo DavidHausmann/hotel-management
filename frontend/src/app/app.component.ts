@@ -1,24 +1,29 @@
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLink } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { ThemeService } from '../core/theme.service';
+import { ThemeService } from '../core/services/theme/theme.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule],
+  imports: [RouterOutlet, RouterLink, CommonModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   title = 'frontend';
   guests: any[] = [];
+  isMenuOpen = false;
 
   constructor(private http: HttpClient, public themeService: ThemeService) {}
 
   ngOnInit() {
     this.fetchGuests();
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
   }
 
   fetchGuests() {
