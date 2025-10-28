@@ -18,10 +18,15 @@ public interface HotelGuestRepository extends JpaRepository<HotelGuest, Long> {
 
     List<HotelGuest> findByPhoneContainingIgnoreCase(String phone);
 
-    @Query("select g from HotelGuest g where " +
-            "(:name is null or lower(g.name) like lower(concat('%', :name, '%'))) and " +
-            "(:document is null or lower(g.document) like lower(concat('%', :document, '%'))) and " +
-            "(:phone is null or lower(g.phone) like lower(concat('%', :phone, '%'))) ")
+    // Revert to a JPQL query that uses LOWER on the entity attributes.
+    // We use a separate countQuery to support pagination reliably.
+    @Query(value = "SELECT h FROM HotelGuest h WHERE "
+            + "(:name IS NULL OR LOWER(h.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND "
+            + "(:document IS NULL OR LOWER(h.document) LIKE LOWER(CONCAT('%', :document, '%'))) AND "
+            + "(:phone IS NULL OR LOWER(h.phone) LIKE LOWER(CONCAT('%', :phone, '%'))) ", countQuery = "SELECT count(h) FROM HotelGuest h WHERE "
+                    + "(:name IS NULL OR LOWER(h.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND "
+                    + "(:document IS NULL OR LOWER(h.document) LIKE LOWER(CONCAT('%', :document, '%'))) AND "
+                    + "(:phone IS NULL OR LOWER(h.phone) LIKE LOWER(CONCAT('%', :phone, '%'))) ")
     Page<HotelGuest> findByFilters(@Param("name") String name,
             @Param("document") String document,
             @Param("phone") String phone,

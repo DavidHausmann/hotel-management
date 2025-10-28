@@ -1,3 +1,44 @@
+@use "@angular/material" as mat;
+
+/*
+  Angular Material theming (Option B): define a light and a dark theme
+  and include component styles. The dark theme is applied under the
+  `.dark__mode` root class which the app toggles at runtime.
+*/
+
+@include mat.core();
+
+// Use the Material v3 theming API: define colors and theme objects
+// using the built-in palettes exposed by the package.
+// Create theme objects using the M3 color config directly
+$light-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$blue-palette,
+    ),
+  )
+);
+
+$dark-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$blue-palette,
+    ),
+  )
+);
+
+// Include light theme globally (wrapped in a selector as required by M3 theming)
+:root {
+  @include mat.all-component-themes($light-theme);
+}
+
+// Include dark theme styles scoped under the `.dark__mode` class
+.dark__mode {
+  @include mat.all-component-themes($dark-theme);
+}
+
 :root {
   --hotel-management-primary: #2196f3;
   --hotel-management-secondary: #1664a2;
@@ -79,10 +120,84 @@ body {
     margin-top: 40px;
     flex-wrap: wrap;
     gap: 16px 24px;
+    .hotel__management__table__footer__left__controls {
+      display: flex;
+      gap: 16px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      .hotel__management__table__pagination__info {
+        margin-top: 4px;
+      }
+    }
+    .spacer {
+      display: block;
+      margin-top: 8px;
+    }
     .hotel__management__table__pagination__controls {
       display: flex;
       gap: 16px;
       margin-top: 8px;
+    }
+  }
+}
+.mat-mdc-outlined-button:not(:disabled) {
+  color: var(--hotel-management-primary) !important;
+}
+.no-ripple {
+  padding: 0 !important;
+  justify-content: flex-start !important;
+  .mat-ripple-element,
+  .mat-mdc-ripple-element,
+  .mdc-ripple-surface,
+  .mat-ripple,
+  .mat-mdc-button-ripple,
+  .mat-focus-indicator::after {
+    display: none !important;
+    opacity: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+    pointer-events: none !important;
+  }
+  .mdc-button__ripple {
+    display: none !important;
+  }
+
+  &.mat-button,
+  &.mat-icon-button,
+  button.no-ripple {
+    background-image: none !important;
+  }
+}
+
+.hotel__management__last__column {
+  width: 96px;
+}
+.hotel__management__table {
+  .mat-mdc-table {
+    border-radius: 24px;
+  }
+}
+.hotel__management__table table tr:last-child td:last-of-type {
+  border-bottom-right-radius: 24px;
+  overflow: hidden;
+}
+.hotel__management__table table tr:last-child td:first-of-type {
+  border-bottom-left-radius: 24px;
+  overflow: hidden;
+}
+.hotel__management__table table tr:last-child th:last-of-type {
+  border-top-right-radius: 24px;
+  overflow: hidden;
+}
+.hotel__management__table table tr:last-child th:first-of-type {
+  border-top-left-radius: 24px;
+  overflow: hidden;
+}
+.dark__mode {
+  .hotel__management__table {
+    .mat-mdc-table {
+      background-color: #272727;
     }
   }
 }

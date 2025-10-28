@@ -5,6 +5,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { HotelGuestsPageService } from '../../services/application/hotel-guests-page.service';
 
 @Component({
@@ -12,42 +14,54 @@ import { HotelGuestsPageService } from '../../services/application/hotel-guests-
   templateUrl: './hotel-guests-table.component.html',
   styleUrls: ['./hotel-guests-table.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatProgressSpinnerModule, MatFormFieldModule, MatSelectModule]
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatMenuModule,
+    MatTooltipModule,
+  ],
 })
 export class HotelGuestsTableComponent {
-  readonly displayedColumns = ['id', 'name', 'document', 'phone', 'hasCar'];
-
-  // Observable of the cached page from the application service (getter ensures service is initialized)
+  readonly displayedColumns = [
+    'id',
+    'name',
+    'document',
+    'phone',
+    'hasCar',
+    'actions',
+  ];
   get page$() {
     return this.pageService.getCachedGuestsPage();
   }
-
-  // Observable of loading state (getter to avoid using pageService before ctor runs)
   get loading$() {
     return this.pageService.getLoading();
   }
-
-  // default page size used when loading
   pageSize = 10;
 
   constructor(private pageService: HotelGuestsPageService) {}
 
+  openEditGuest(element: any) {
+    console.log('openEditGuest', element);
+  }
+
+  openDeleteGuest(element: any) {
+    console.log('openDeleteGuest', element);
+  }
+
   ngOnInit(): void {
-    // initial load
     this.loadPage(0);
   }
 
-  // Load specific page and update cache (the service caches automatically)
   loadPage(pageNumber: number) {
     this.pageService.fetchGuestsPage({}, pageNumber, this.pageSize).subscribe({
-      // no-op: fetchGuestsPage writes to the cache and components react via page$
-      error: () => {
-        // optionally handle error (could show snackbar) — no-op here
-      }
+      error: () => {},
     });
   }
 
-  // Convenience helpers for prev/next navigation using cached snapshot
   canPrev(): boolean {
     const snap = this.pageService.getLastCachedSnapshot();
     return !!(snap && snap.pagination.pageNumber > 0);
@@ -61,18 +75,19 @@ export class HotelGuestsTableComponent {
 
   prevPage() {
     if (!this.canPrev()) return;
-    const current = this.pageService.getLastCachedSnapshot()!.pagination.pageNumber;
+    const current =
+      this.pageService.getLastCachedSnapshot()!.pagination.pageNumber;
     this.loadPage(current - 1);
   }
 
   nextPage() {
     if (!this.canNext()) return;
-    const current = this.pageService.getLastCachedSnapshot()!.pagination.pageNumber;
+    const current =
+      this.pageService.getLastCachedSnapshot()!.pagination.pageNumber;
     this.loadPage(current + 1);
   }
 
   onPageSizeChange(value: number) {
-    // cap enforced in service; update local and reload first page
     this.pageSize = Math.min(value, 30);
     this.loadPage(0);
   }
