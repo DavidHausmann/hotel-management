@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import com.hotel.management.service.HotelStayService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,12 +35,12 @@ public class HotelStayController {
     @Operation(summary = "Create reservation", description = "Create a reservation for an existing guest (status RESERVED)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Reservation created successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = HotelStayResponse.class), examples = @ExampleObject(value = "{\"id\":1,\"status\":\"RESERVED\",\"hotelGuestId\":42}"))),
-            @ApiResponse(responseCode = "400", description = "Invalid guest id or request", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class)))
+            @ApiResponse(responseCode = "400", description = "ID do hóspede inválido ou requisição inválida", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class)))
     })
     @PostMapping("/reserve/{hotelGuestId}")
     public ResponseEntity<HotelStayResponse> createReservation(
             @Parameter(description = "ID of the hotel guest to reserve for", required = true) @PathVariable Long hotelGuestId,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Reservation details: plannedStartDate, plannedEndDate, numberOfGuests", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"plannedStartDate\": \"2025-11-01\", \"plannedEndDate\": \"2025-11-05\", \"numberOfGuests\": 2}"))) @RequestBody com.hotel.management.dto.HotelStayCreateRequest request) {
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Reservation details: plannedStartDate, plannedEndDate, numberOfGuests", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"plannedStartDate\": \"2025-11-01\", \"plannedEndDate\": \"2025-11-05\", \"numberOfGuests\": 2}"))) @Valid @RequestBody com.hotel.management.dto.HotelStayCreateRequest request) {
         HotelStayResponse saved = hotelStayService.createReservation(hotelGuestId, request.getPlannedStartDate(),
                 request.getPlannedEndDate(), request.getNumberOfGuests());
         return ResponseEntity.ok(saved);
@@ -49,7 +50,7 @@ public class HotelStayController {
     @Operation(summary = "Check-in", description = "Perform check-in for an existing reservation. Provide checkinTime in ISO format in the request body.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Check-in successful", content = @Content(mediaType = "application/json", schema = @Schema(implementation = HotelStayResponse.class), examples = @ExampleObject(value = "{\"id\":1,\"status\":\"CHECKED_IN\",\"checkinTime\":\"2025-10-26T14:00:00\"}"))),
-            @ApiResponse(responseCode = "400", description = "Invalid input or bad request", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class), examples = @ExampleObject(value = "{\"timestamp\": \"2025-10-26T11:00:00\", \"status\": 400, \"error\": \"Bad Request\", \"message\": \"Validation error\", \"details\": [{\"field\": \"checkoutTime\", \"message\": \"must be present and later than checkinTime\"}, {\"field\": \"stayId\", \"message\": \"not found or not active\"}]}"))),
+            @ApiResponse(responseCode = "400", description = "Entrada inválida ou requisição inválida", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class), examples = @ExampleObject(value = "{\"timestamp\": \"2025-10-26T11:00:00\", \"status\": 400, \"error\": \"Requisição inválida\", \"message\": \"Erro de validação\", \"details\": [{\"field\": \"checkoutTime\", \"message\": \"deve estar presente e ser posterior ao horário de check-in\"}, {\"field\": \"stayId\", \"message\": \"não encontrado ou não ativo\"}]}"))),
             @ApiResponse(responseCode = "404", description = "Reservation not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class)))
     })
     @PatchMapping("/{stayId}/checkin")
@@ -83,8 +84,8 @@ public class HotelStayController {
     @Operation(summary = "Check-out", description = "Perform checkout for an active stay and calculate total amount. Provide checkoutTime in ISO format in the request body.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Checkout successful with totalAmount populated", content = @Content(mediaType = "application/json", schema = @Schema(implementation = HotelStayResponse.class), examples = @ExampleObject(value = "{\"id\":1,\"status\":\"CHECKED_OUT\",\"totalAmount\":360.0}"))),
-            @ApiResponse(responseCode = "400", description = "Invalid input or bad request", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Active stay not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class)))
+            @ApiResponse(responseCode = "400", description = "Entrada inválida ou requisição inválida", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Estadia ativa não encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class)))
     })
     @PatchMapping("/{stayId}/checkout")
     public ResponseEntity<HotelStayResponse> checkOut(
@@ -117,5 +118,18 @@ public class HotelStayController {
     @GetMapping("/pending-reservations")
     public ResponseEntity<List<HotelStayResponse>> findHotelGuestsWithPendingReservations() {
         return ResponseEntity.ok(hotelStayService.findHotelGuestsWithPendingReservations());
+    }
+
+    // DELETE /api/stay/{stayId} - Excluir reserva apenas se status == RESERVED
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Reserva excluída com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida - reserva não pode ser excluída ou inválida", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Reserva não encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class)))
+    })
+    @DeleteMapping("/{stayId}")
+    public ResponseEntity<Void> deleteReservation(
+            @Parameter(description = "ID of the stay to delete", required = true) @PathVariable Long stayId) {
+        hotelStayService.deleteReservationIfReserved(stayId);
+        return ResponseEntity.noContent().build();
     }
 }

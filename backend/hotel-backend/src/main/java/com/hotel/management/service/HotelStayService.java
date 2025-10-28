@@ -6,6 +6,7 @@ import com.hotel.management.model.HotelStay;
 import com.hotel.management.model.HotelStayStatus;
 import com.hotel.management.repository.HotelStayRepository;
 import com.hotel.management.repository.HotelGuestRepository;
+import com.hotel.management.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,7 +58,7 @@ public class HotelStayService {
     public HotelStayResponse createReservation(Long hotelGuestId, java.time.LocalDate plannedStartDate,
             java.time.LocalDate plannedEndDate, Integer numberOfGuests) {
         HotelGuest hotelGuest = hotelGuestRepository.findById(hotelGuestId)
-                .orElseThrow(() -> new IllegalArgumentException("Hóspede não encontrado: " + hotelGuestId));
+                .orElseThrow(() -> new ResourceNotFoundException("Hóspede não encontrado: " + hotelGuestId));
 
         HotelStay stay = new HotelStay();
         stay.setHotelGuest(hotelGuest);
@@ -92,7 +93,7 @@ public class HotelStayService {
     @Transactional
     public HotelStayResponse checkIn(Long stayId, LocalDateTime checkinTime) {
         HotelStay stay = stayRepository.findById(stayId)
-                .orElseThrow(() -> new IllegalArgumentException("Reserva/Estadia não encontrada: " + stayId));
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva/Estadia não encontrada: " + stayId));
 
         if (stay.getStatus() != HotelStayStatus.RESERVED) {
             throw new IllegalStateException("O check-in só pode ser feito em uma reserva PENDENTE.");
@@ -114,7 +115,7 @@ public class HotelStayService {
     @Transactional
     public HotelStayResponse checkOut(Long stayId, LocalDateTime checkoutTime) {
         HotelStay stay = stayRepository.findById(stayId)
-                .orElseThrow(() -> new IllegalArgumentException("Estadia não encontrada: " + stayId));
+                .orElseThrow(() -> new ResourceNotFoundException("Estadia não encontrada: " + stayId));
 
         if (stay.getStatus() != HotelStayStatus.CHECKED_IN || stay.getCheckinTime() == null) {
             throw new IllegalStateException("O checkout só pode ser feito em uma estadia ATIVA.");
@@ -134,6 +135,19 @@ public class HotelStayService {
 
         HotelStay saved = stayRepository.save(stay);
         return mapToResponse(saved);
+    }
+
+    // 6. Excluir Reserva somente quando estiver em status RESERVED
+    @Transactional
+    public void deleteReservationIfReserved(Long stayId) {
+        HotelStay stay = stayRepository.findById(stayId)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva não encontrada: " + stayId));
+
+        if (stay.getStatus() != HotelStayStatus.RESERVED) {
+            throw new IllegalArgumentException("Só é possível excluir reservas com status PENDENTE.");
+        }
+
+        stayRepository.delete(stay);
     }
 
     /**

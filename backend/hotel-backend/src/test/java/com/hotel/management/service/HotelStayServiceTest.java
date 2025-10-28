@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.time.LocalDate;
 import com.hotel.management.dto.DashboardResponse;
+import com.hotel.management.exception.ResourceNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -69,7 +70,7 @@ public class HotelStayServiceTest {
     void createReservation_guestNotFound_throws() {
         when(guestRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> service.createReservation(99L, null, null, null));
+        assertThrows(ResourceNotFoundException.class, () -> service.createReservation(99L, null, null, null));
     }
 
     @Test
@@ -146,5 +147,39 @@ public class HotelStayServiceTest {
         assertThat(resp.getTotalActiveCheckins()).isEqualTo(2L);
         assertThat(resp.getTotalCurrentGuests()).isEqualTo(5L);
         assertThat(resp.getTotalCurrentCars()).isEqualTo(1L);
+    }
+
+    @Test
+    void deleteReservationIfReserved_success_when_reserved() {
+        HotelGuest guest = new HotelGuest();
+        guest.setId(2L);
+
+        HotelStay stay = new HotelStay();
+        stay.setId(50L);
+        stay.setHotelGuest(guest);
+        stay.setStatus(HotelStayStatus.RESERVED);
+
+        when(stayRepository.findById(50L)).thenReturn(Optional.of(stay));
+
+        // Should not throw
+        service.deleteReservationIfReserved(50L);
+
+        // verify delete called
+        org.mockito.Mockito.verify(stayRepository).delete(stay);
+    }
+
+    @Test
+    void deleteReservationIfReserved_throws_when_not_reserved() {
+        HotelGuest guest = new HotelGuest();
+        guest.setId(2L);
+
+        HotelStay stay = new HotelStay();
+        stay.setId(51L);
+        stay.setHotelGuest(guest);
+        stay.setStatus(HotelStayStatus.CHECKED_IN);
+
+        when(stayRepository.findById(51L)).thenReturn(Optional.of(stay));
+
+        assertThrows(IllegalArgumentException.class, () -> service.deleteReservationIfReserved(51L));
     }
 }

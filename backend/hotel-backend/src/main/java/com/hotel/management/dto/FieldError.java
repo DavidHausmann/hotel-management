@@ -14,6 +14,6 @@ public class FieldError {
     @Schema(description = "Field name", example = "name")
     private String field;
 
-    @Schema(description = "Validation message", example = "must not be blank")
+    @Schema(description = "Validation message", example = "não pode ficar em branco")
     private String message;
 }

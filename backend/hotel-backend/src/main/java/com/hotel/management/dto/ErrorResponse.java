@@ -16,10 +16,10 @@ public class ErrorResponse {
     @Schema(description = "HTTP status code", example = "400")
     private int status;
 
-    @Schema(description = "Short error description", example = "Bad Request")
+    @Schema(description = "Short error description", example = "Requisição inválida")
     private String error;
 
-    @Schema(description = "Detailed message", example = "Validation failed for object 'hotelGuest'")
+    @Schema(description = "Detailed message", example = "Erro de validação para o objeto 'hotelGuest'")
     private String message;
 
     @Schema(description = "Optional additional details as list of field errors")

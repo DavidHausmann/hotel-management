@@ -127,15 +127,34 @@ public class HotelStayControllerTest {
     void createReservation_guestNotFound_returns_structured_error() throws Exception {
         when(hotelStayService.createReservation(eq(99L), any(LocalDate.class), any(LocalDate.class),
                 any(Integer.class)))
-                .thenThrow(new IllegalArgumentException("Guest not found: 99"));
+                .thenThrow(new com.hotel.management.exception.ResourceNotFoundException("Hóspede não encontrado: 99"));
 
         String body = "{\"plannedStartDate\":\"2025-11-01\",\"plannedEndDate\":\"2025-11-05\",\"numberOfGuests\":2}";
 
         mockMvc.perform(post("/api/stay/reserve/99")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.message").value("Hóspede não encontrado: 99"));
+    }
+
+    @Test
+    void deleteReservation_returns_no_content_when_reserved() throws Exception {
+        // service does nothing (void) when deletion is successful
+        org.mockito.Mockito.doNothing().when(hotelStayService).deleteReservationIfReserved(100L);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/stay/100"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteReservation_returns_bad_request_when_not_deletable() throws Exception {
+        org.mockito.Mockito.doThrow(new IllegalArgumentException("Só é possível excluir reservas com status PENDENTE."))
+                .when(hotelStayService).deleteReservationIfReserved(101L);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/stay/101"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.message").value("Guest not found: 99"));
+                .andExpect(jsonPath("$.message").value("Só é possível excluir reservas com status PENDENTE."));
     }
 }

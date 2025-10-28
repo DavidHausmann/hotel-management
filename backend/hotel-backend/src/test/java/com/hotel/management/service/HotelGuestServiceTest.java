@@ -65,6 +65,6 @@ public class HotelGuestServiceTest {
 
         HotelGuestPatchRequest req = new HotelGuestPatchRequest();
 
-        assertThrows(IllegalArgumentException.class, () -> service.patch(99L, req));
+        assertThrows(com.hotel.management.exception.ResourceNotFoundException.class, () -> service.patch(99L, req));
     }
 }

@@ -22,7 +22,8 @@ public class HotelGuestService {
 
     public HotelGuest patch(Long id, com.hotel.management.dto.HotelGuestPatchRequest updates) {
         Optional<HotelGuest> maybe = hotelGuestRepository.findById(id);
-        HotelGuest existing = maybe.orElseThrow(() -> new IllegalArgumentException("HotelGuest not found: " + id));
+        HotelGuest existing = maybe.orElseThrow(
+                () -> new com.hotel.management.exception.ResourceNotFoundException("Hóspede não encontrado: " + id));
 
         if (updates.getName() != null) {
             existing.setName(updates.getName());

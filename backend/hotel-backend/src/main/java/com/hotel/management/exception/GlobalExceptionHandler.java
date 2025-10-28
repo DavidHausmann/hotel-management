@@ -27,8 +27,8 @@ public class GlobalExceptionHandler {
         ErrorResponse resp = new ErrorResponse();
         resp.setTimestamp(LocalDateTime.now());
         resp.setStatus(HttpStatus.BAD_REQUEST.value());
-        resp.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        resp.setMessage("Validation error");
+        resp.setError("Requisição inválida");
+        resp.setMessage("Erro de validação");
         resp.setDetails(details);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resp);
@@ -39,10 +39,22 @@ public class GlobalExceptionHandler {
         ErrorResponse resp = new ErrorResponse();
         resp.setTimestamp(LocalDateTime.now());
         resp.setStatus(org.springframework.http.HttpStatus.BAD_REQUEST.value());
-        resp.setError(org.springframework.http.HttpStatus.BAD_REQUEST.getReasonPhrase());
+        resp.setError("Requisição inválida");
         resp.setMessage(ex.getMessage());
         resp.setDetails(Collections.emptyList());
 
         return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST).body(resp);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex) {
+        ErrorResponse resp = new ErrorResponse();
+        resp.setTimestamp(LocalDateTime.now());
+        resp.setStatus(org.springframework.http.HttpStatus.NOT_FOUND.value());
+        resp.setError("Não encontrado");
+        resp.setMessage(ex.getMessage());
+        resp.setDetails(Collections.emptyList());
+
+        return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND).body(resp);
     }
 }
