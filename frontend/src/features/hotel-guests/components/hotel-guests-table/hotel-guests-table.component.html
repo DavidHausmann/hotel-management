@@ -1,5 +1,20 @@
 <div class="hotel__management__table mat-elevation-1">
   <div class="table-scroll">
+    <div class="hotel__management__table__filters" style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+      <mat-checkbox
+        [checked]="filterInHotel === true"
+        (change)="toggleInHotelCheckbox($event.checked)"
+        >No hotel</mat-checkbox
+      >
+
+      <mat-checkbox
+        [checked]="filterReserved === true"
+        (change)="toggleReservedCheckbox($event.checked)"
+        >Reserva pendente</mat-checkbox
+      >
+
+      <button mat-button (click)="clearFilters()">Limpar filtros</button>
+    </div>
     <table
       mat-table
       [dataSource]="(page$ | async)?.items || []"

@@ -20,13 +20,15 @@ public class HotelGuestServiceTest {
 
     @Mock
     private HotelGuestRepository repository;
+    @Mock
+    private com.hotel.management.repository.HotelStayRepository stayRepository;
 
     private HotelGuestService service;
 
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        service = new HotelGuestService(repository);
+        service = new HotelGuestService(repository, stayRepository);
     }
 
     @Test
@@ -66,5 +68,38 @@ public class HotelGuestServiceTest {
         HotelGuestPatchRequest req = new HotelGuestPatchRequest();
 
         assertThrows(com.hotel.management.exception.ResourceNotFoundException.class, () -> service.patch(99L, req));
+    }
+
+    @Test
+    void delete_should_throw_conflict_when_guest_checked_in() {
+        HotelGuest g = new HotelGuest();
+        g.setId(5L);
+        when(repository.findById(5L)).thenReturn(Optional.of(g));
+        when(stayRepository.countByHotelGuest_IdAndStatus(5L, com.hotel.management.model.HotelStayStatus.CHECKED_IN))
+                .thenReturn(1L);
+
+        org.junit.jupiter.api.Assertions.assertThrows(com.hotel.management.exception.ResourceConflictException.class,
+                () -> service.deleteById(5L));
+    }
+
+    @Test
+    void delete_should_remove_reserved_stays_and_guest_when_no_checked_in() {
+        HotelGuest g = new HotelGuest();
+        g.setId(7L);
+        when(repository.findById(7L)).thenReturn(Optional.of(g));
+        when(stayRepository.countByHotelGuest_IdAndStatus(7L, com.hotel.management.model.HotelStayStatus.CHECKED_IN))
+                .thenReturn(0L);
+
+        com.hotel.management.model.HotelStay stay = new com.hotel.management.model.HotelStay();
+        stay.setId(101L);
+        when(stayRepository.findByHotelGuest_IdAndStatus(7L, com.hotel.management.model.HotelStayStatus.RESERVED))
+                .thenReturn(java.util.List.of(stay));
+
+        // perform delete
+        service.deleteById(7L);
+
+        // verify reserved stays deleted and guest deleted
+        org.mockito.Mockito.verify(stayRepository).deleteAll(org.mockito.ArgumentMatchers.eq(java.util.List.of(stay)));
+        org.mockito.Mockito.verify(repository).deleteById(7L);
     }
 }

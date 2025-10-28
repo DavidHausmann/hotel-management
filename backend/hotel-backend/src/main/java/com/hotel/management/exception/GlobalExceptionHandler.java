@@ -57,4 +57,16 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND).body(resp);
     }
+
+    @ExceptionHandler(ResourceConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflict(ResourceConflictException ex) {
+        ErrorResponse resp = new ErrorResponse();
+        resp.setTimestamp(LocalDateTime.now());
+        resp.setStatus(org.springframework.http.HttpStatus.CONFLICT.value());
+        resp.setError("Conflito");
+        resp.setMessage(ex.getMessage());
+        resp.setDetails(Collections.emptyList());
+
+        return ResponseEntity.status(org.springframework.http.HttpStatus.CONFLICT).body(resp);
+    }
 }

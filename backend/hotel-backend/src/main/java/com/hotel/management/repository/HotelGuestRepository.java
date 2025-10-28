@@ -23,12 +23,18 @@ public interface HotelGuestRepository extends JpaRepository<HotelGuest, Long> {
     @Query(value = "SELECT h FROM HotelGuest h WHERE "
             + "(:name IS NULL OR LOWER(h.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND "
             + "(:document IS NULL OR LOWER(h.document) LIKE LOWER(CONCAT('%', :document, '%'))) AND "
-            + "(:phone IS NULL OR LOWER(h.phone) LIKE LOWER(CONCAT('%', :phone, '%'))) ", countQuery = "SELECT count(h) FROM HotelGuest h WHERE "
+            + "(:phone IS NULL OR LOWER(h.phone) LIKE LOWER(CONCAT('%', :phone, '%'))) AND "
+            + "(:inHotel IS NULL OR (EXISTS (SELECT 1 FROM HotelStay s WHERE s.hotelGuest = h AND s.status = com.hotel.management.model.HotelStayStatus.CHECKED_IN))) AND "
+            + "(:reserved IS NULL OR (EXISTS (SELECT 1 FROM HotelStay s2 WHERE s2.hotelGuest = h AND s2.status = com.hotel.management.model.HotelStayStatus.RESERVED))) ", countQuery = "SELECT count(DISTINCT h) FROM HotelGuest h WHERE "
                     + "(:name IS NULL OR LOWER(h.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND "
                     + "(:document IS NULL OR LOWER(h.document) LIKE LOWER(CONCAT('%', :document, '%'))) AND "
-                    + "(:phone IS NULL OR LOWER(h.phone) LIKE LOWER(CONCAT('%', :phone, '%'))) ")
+                    + "(:phone IS NULL OR LOWER(h.phone) LIKE LOWER(CONCAT('%', :phone, '%'))) AND "
+                    + "(:inHotel IS NULL OR (EXISTS (SELECT 1 FROM HotelStay s WHERE s.hotelGuest = h AND s.status = com.hotel.management.model.HotelStayStatus.CHECKED_IN))) AND "
+                    + "(:reserved IS NULL OR (EXISTS (SELECT 1 FROM HotelStay s2 WHERE s2.hotelGuest = h AND s2.status = com.hotel.management.model.HotelStayStatus.RESERVED))) ")
     Page<HotelGuest> findByFilters(@Param("name") String name,
             @Param("document") String document,
             @Param("phone") String phone,
+            @Param("inHotel") Boolean inHotel,
+            @Param("reserved") Boolean reserved,
             Pageable pageable);
 }

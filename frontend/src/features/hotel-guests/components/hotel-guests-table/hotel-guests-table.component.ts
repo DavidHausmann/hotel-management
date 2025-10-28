@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HotelGuestsPageService } from '../../services/application/hotel-guests-page.service';
+import { HotelGuestFilters } from '../../shared/hotel-guests.model';
 
 @Component({
   selector: 'app-hotel-guests-table',
@@ -19,6 +21,7 @@ import { HotelGuestsPageService } from '../../services/application/hotel-guests-
     MatTableModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MatCheckboxModule,
     MatFormFieldModule,
     MatSelectModule,
     MatMenuModule,
@@ -41,6 +44,12 @@ export class HotelGuestsTableComponent {
     return this.pageService.getLoading();
   }
   pageSize = 10;
+  // filter state
+  filterInHotel: boolean | null = null; // null -> not applied; true/false -> applied
+  filterReserved: boolean | null = null;
+  filterName: string | undefined;
+  filterDocument: string | undefined;
+  filterPhone: string | undefined;
 
   constructor(private pageService: HotelGuestsPageService) {}
 
@@ -57,9 +66,18 @@ export class HotelGuestsTableComponent {
   }
 
   loadPage(pageNumber: number) {
-    this.pageService.fetchGuestsPage({}, pageNumber, this.pageSize).subscribe({
-      error: () => {},
-    });
+    const options: HotelGuestFilters = {};
+    if (this.filterName) options.name = this.filterName;
+    if (this.filterDocument) options.document = this.filterDocument;
+    if (this.filterPhone) options.phone = this.filterPhone;
+    if (this.filterInHotel !== null) options.inHotel = this.filterInHotel;
+    if (this.filterReserved !== null) options.reserved = this.filterReserved;
+
+    this.pageService
+      .fetchGuestsPage(options, pageNumber, this.pageSize)
+      .subscribe({
+        error: () => {},
+      });
   }
 
   canPrev(): boolean {
@@ -89,6 +107,25 @@ export class HotelGuestsTableComponent {
 
   onPageSizeChange(value: number) {
     this.pageSize = Math.min(value, 30);
+    this.loadPage(0);
+  }
+
+  toggleInHotelCheckbox(checked: boolean) {
+    this.filterInHotel = checked;
+    this.loadPage(0);
+  }
+
+  toggleReservedCheckbox(checked: boolean) {
+    this.filterReserved = checked;
+    this.loadPage(0);
+  }
+
+  clearFilters() {
+    this.filterInHotel = null;
+    this.filterReserved = null;
+    this.filterName = undefined;
+    this.filterDocument = undefined;
+    this.filterPhone = undefined;
     this.loadPage(0);
   }
 }

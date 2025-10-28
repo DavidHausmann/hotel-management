@@ -71,6 +71,8 @@ public class HotelGuestController {
                         @RequestParam(required = false) String name,
                         @RequestParam(required = false) String document,
                         @RequestParam(required = false) String phone,
+                        @RequestParam(required = false) Boolean inHotel,
+                        @RequestParam(required = false) Boolean reserved,
                         @PageableDefault(size = 20) Pageable pageable) {
                 // Enforce a maximum page size to avoid very large responses
                 int maxSize = 30;
@@ -79,7 +81,7 @@ public class HotelGuestController {
                 }
 
                 org.springframework.data.domain.Page<HotelGuest> page = hotelGuestService.search(name, document, phone,
-                                pageable);
+                                inHotel, reserved, pageable);
                 org.springframework.data.domain.Page<HotelGuestResponse> mapped = page.map(this::toResponse);
                 return ResponseEntity.ok(mapped);
         }

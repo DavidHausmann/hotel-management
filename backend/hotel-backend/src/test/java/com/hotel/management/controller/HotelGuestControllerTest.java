@@ -60,6 +60,7 @@ public class HotelGuestControllerTest {
 
         org.mockito.Mockito.doReturn(page).when(guestService).search(org.mockito.ArgumentMatchers.any(),
                 org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(),
                 org.mockito.ArgumentMatchers.any(org.springframework.data.domain.Pageable.class));
 
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/guest/search")
