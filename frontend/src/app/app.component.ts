@@ -1,6 +1,5 @@
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from '../core/services/theme/theme.service';
 
@@ -16,24 +15,11 @@ export class AppComponent implements OnInit {
   guests: any[] = [];
   isMenuOpen = false;
 
-  constructor(private http: HttpClient, public themeService: ThemeService) {}
+  constructor(public themeService: ThemeService) {}
 
-  ngOnInit() {
-    this.fetchGuests();
-  }
+  ngOnInit() {}
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
-  }
-
-  fetchGuests() {
-    this.http.get<any[]>('http://localhost:8080/api/guest').subscribe({
-      next: (data) => {
-        this.guests = data;
-      },
-      error: (error) => {
-        console.error('Error fetching guests:', error);
-      },
-    });
   }
 }

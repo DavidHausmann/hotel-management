@@ -1,79 +1,36 @@
-/* Table container: limit to available space and enable horizontal scroll when needed */
 .hotel__management__table {
-	width: 100%;
-	max-width: 100%;
-	box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 
-	.table-scroll {
-		width: 100%;
-		overflow-x: auto; /* allow horizontal scrolling when table is wider than container */
-		-webkit-overflow-scrolling: touch;
-	}
+  .table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table.mat-mdc-table {
+    width: 100%;
+    table-layout: auto;
+    min-width: 640px;
+    border-collapse: collapse;
+  }
 
-	/* Make the table try to use available width but allow horizontal scrolling
-		 when columns/cell content require more space. table-layout: auto gives
-		 cells flexibility; min-width encourages a scrollbar on small viewports. */
-	table.mat-mdc-table {
-		width: 100%;
-		table-layout: auto;
-		min-width: 640px; /* adapt if you want a different breakpoint */
-		border-collapse: collapse;
-	}
+  th.mat-header-cell,
+  td.mat-cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 1px;
+    padding: 8px 12px;
+    vertical-align: middle;
+  }
 
-	/* Keep header and cells on one line by default; show ellipsis for overflow.
-		 The overall horizontal scroll (on .table-scroll) will allow seeing hidden
-		 content if the user scrolls. */
-	th.mat-header-cell,
-	td.mat-cell {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		max-width: 1px; /* this forces ellipsis behavior while letting table determine column widths */
-		padding: 8px 12px;
-		vertical-align: middle;
-	}
-
-	/* If you prefer per-cell horizontal scrolling instead of ellipsis, you can
-		 wrap cell text in an inner element with class .cell-content and enable
-		 overflow-x:auto there. The template currently doesn't add that wrapper,
-		 so we keep a global horizontal scroll on the table. */
-
-
-	.loading-overlay {
-		position: absolute;
-		inset: 0 0 0 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: rgba(255, 255, 255, 0.6);
-	}
+  .loading-overlay {
+    position: absolute;
+    inset: 0 0 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.6);
+  }
 }
-
-/* Disable Material ripple for buttons that have the `no-ripple` class.
-	 We target multiple possible ripple element classnames used by different
-	 versions/builds of Angular Material to make this robust. */
-.no-ripple {
-	/* hide ripple elements if present */
-	.mat-ripple-element,
-	.mat-mdc-ripple-element,
-	.mdc-ripple-surface,
-	.mat-ripple,
-	.mat-mdc-button-ripple,
-	.mat-focus-indicator::after {
-		display: none !important;
-		opacity: 0 !important;
-		background: transparent !important;
-		box-shadow: none !important;
-		animation: none !important;
-		pointer-events: none !important;
-	}
-
-	/* Remove ripple background/hover visual effects */
-	&.mat-button,
-	&.mat-icon-button,
-	button.no-ripple {
-		background-image: none !important;
-	}
-}
-
-
