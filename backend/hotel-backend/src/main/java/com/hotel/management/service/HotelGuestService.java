@@ -3,6 +3,8 @@ package com.hotel.management.service;
 import com.hotel.management.model.HotelGuest;
 import com.hotel.management.repository.HotelGuestRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +57,14 @@ public class HotelGuestService {
 
     public List<HotelGuest> searchByPhone(String phone) {
         return hotelGuestRepository.findByPhoneContainingIgnoreCase(phone);
+    }
+
+    public Page<HotelGuest> search(String name, String document, String phone, Pageable pageable) {
+        return hotelGuestRepository.findByFilters(
+                (name == null || name.isBlank()) ? null : name,
+                (document == null || document.isBlank()) ? null : document,
+                (phone == null || phone.isBlank()) ? null : phone,
+                pageable);
     }
 
     public void deleteById(Long id) {

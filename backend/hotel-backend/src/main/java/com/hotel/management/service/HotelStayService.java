@@ -12,8 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class HotelStayService {
@@ -49,6 +52,16 @@ public class HotelStayService {
     public HotelStayService(HotelStayRepository stayRepository, HotelGuestRepository hotelGuestRepository) {
         this.stayRepository = stayRepository;
         this.hotelGuestRepository = hotelGuestRepository;
+    }
+
+    /**
+     * Search reservations with optional guest filters and date window. Returns a
+     * pageable result of mapped DTOs.
+     */
+    public Page<HotelStayResponse> search(String name, String document, String phone, LocalDate start,
+            LocalDate end, Pageable pageable) {
+        Page<HotelStay> page = stayRepository.findByFilters(name, document, phone, start, end, pageable);
+        return page.map(this::mapToResponse);
     }
 
     // --- Métodos de CRUD Básico e Pesquisa ---

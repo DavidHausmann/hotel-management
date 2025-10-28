@@ -4,6 +4,7 @@ import com.hotel.management.controller.HotelGuestController;
 import com.hotel.management.dto.ErrorResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
+import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -24,7 +25,8 @@ public class GlobalExceptionHandlerTest {
         binding.addError(new FieldError("hotelGuest", "name", "must not be blank"));
 
         // Obtain MethodParameter from controller 'save' method (first parameter)
-        Method method = HotelGuestController.class.getMethod("save", com.hotel.management.model.HotelGuest.class);
+        Method method = HotelGuestController.class.getMethod("save",
+                com.hotel.management.dto.HotelGuestCreateRequest.class);
         MethodParameter param = new MethodParameter(method, 0);
 
         MethodArgumentNotValidException ex = new MethodArgumentNotValidException(param, binding);
@@ -32,8 +34,7 @@ public class GlobalExceptionHandlerTest {
         var resp = handler.handleValidationExceptions(ex);
 
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        ErrorResponse body = resp.getBody();
-        assertThat(body).isNotNull();
+        ErrorResponse body = Objects.requireNonNull(resp.getBody());
         assertThat(body.getDetails()).isNotEmpty();
         assertThat(body.getDetails().get(0).getField()).isEqualTo("name");
         assertThat(body.getDetails().get(0).getMessage()).isEqualTo("must not be blank");

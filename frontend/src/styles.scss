@@ -1,5 +1,6 @@
 :root {
   --hotel-management-primary: #2196f3;
+  --hotel-management-secondary: #1664a2;
 }
 
 * {
@@ -12,7 +13,7 @@ body {
   padding: 0;
 }
 body {
-  font-family: 'Roboto', "Helvetica Neue", sans-serif;
+  font-family: "Roboto", "Helvetica Neue", sans-serif;
   font-weight: 400;
   scroll-behavior: smooth;
 }
@@ -68,5 +69,20 @@ body {
 
   * {
     scrollbar-color: #555555 #2c2c2c;
+  }
+}
+
+.hotel__management__table {
+  .hotel__management__table__footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 40px;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+    .hotel__management__table__pagination__controls {
+      display: flex;
+      gap: 16px;
+      margin-top: 8px;
+    }
   }
 }

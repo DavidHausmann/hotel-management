@@ -1,0 +1,20 @@
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 19px;
+  font-weight: 500;
+  .breadcrumb__previous {
+    color: var(--hotel-management-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  .breadcrumb__current__text {
+    color: var(--hotel-management-secondary);
+  }
+}

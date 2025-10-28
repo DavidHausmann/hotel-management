@@ -1,0 +1,69 @@
+<div class="hotel__management__table mat-elevation-1">
+		<table mat-table [dataSource]="(page$ | async)?.items || []" class="mat-mdc-table" role="table">
+
+		<!-- ID Column -->
+		<ng-container matColumnDef="id">
+			<th mat-header-cell *matHeaderCellDef> ID </th>
+			<td mat-cell *matCellDef="let element"> {{ element.id }} </td>
+		</ng-container>
+
+		<!-- Name Column -->
+		<ng-container matColumnDef="name">
+			<th mat-header-cell *matHeaderCellDef> Nome </th>
+			<td mat-cell *matCellDef="let element"> {{ element.name }} </td>
+		</ng-container>
+
+		<!-- Document Column -->
+		<ng-container matColumnDef="document">
+			<th mat-header-cell *matHeaderCellDef> Documento </th>
+			<td mat-cell *matCellDef="let element"> {{ element.document }} </td>
+		</ng-container>
+
+		<!-- Phone Column -->
+		<ng-container matColumnDef="phone">
+			<th mat-header-cell *matHeaderCellDef> Telefone </th>
+			<td mat-cell *matCellDef="let element"> {{ element.phone }} </td>
+		</ng-container>
+
+		<!-- HasCar Column -->
+		<ng-container matColumnDef="hasCar">
+			<th mat-header-cell *matHeaderCellDef> Carro </th>
+			<td mat-cell *matCellDef="let element"> {{ element.hasCar ? 'Sim' : 'Não' }} </td>
+		</ng-container>
+
+		<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+		<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+	</table>
+
+		<div class="table-footer hotel__management__table__footer">
+			<div class="left-controls">
+				<mat-form-field appearance="outline" class="page-size-field">
+					<mat-label>Tamanho</mat-label>
+					<mat-select [value]="pageSize" (selectionChange)="onPageSizeChange($event.value)">
+						<mat-option [value]="5">5</mat-option>
+						<mat-option [value]="10">10</mat-option>
+						<mat-option [value]="20">20</mat-option>
+						<mat-option [value]="30">30</mat-option>
+					</mat-select>
+				</mat-form-field>
+
+				<div class="pagination-info">
+					<ng-container *ngIf="(page$ | async) as p">
+						<span>Mostrando página {{ p.pagination.pageNumber + 1 }} / {{ p.pagination.totalPages }}</span>
+						<span class="spacer"></span>
+						<span>{{ p.pagination.total }} hóspedes</span>
+					</ng-container>
+				</div>
+			</div>
+
+			<div class="pagination-controls hotel__management__table__pagination__controls">
+				<button mat-stroked-button color="primary" (click)="prevPage()" [disabled]="(loading$ | async) || !canPrev()">Anterior</button>
+				<button mat-stroked-button color="primary" (click)="nextPage()" [disabled]="(loading$ | async) || !canNext()">Próxima</button>
+			</div>
+		</div>
+
+		<!-- Loading overlay -->
+		<div class="loading-overlay" *ngIf="(loading$ | async)">
+			<mat-progress-spinner diameter="48" mode="indeterminate"></mat-progress-spinner>
+		</div>
+</div>

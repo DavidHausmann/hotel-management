@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @RestController
 @RequestMapping("/api/stay")
@@ -118,6 +121,29 @@ public class HotelStayController {
     @GetMapping("/pending-reservations")
     public ResponseEntity<List<HotelStayResponse>> findHotelGuestsWithPendingReservations() {
         return ResponseEntity.ok(hotelStayService.findHotelGuestsWithPendingReservations());
+    }
+
+    // GET /api/stay/search - Paginated search for reservations with optional
+    // filters
+    @GetMapping("/search")
+    public ResponseEntity<org.springframework.data.domain.Page<HotelStayResponse>> searchReservations(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String document,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            Pageable pageable) {
+        // Enforce maximum page size to avoid large responses
+        int maxSize = 30;
+        if (pageable.getPageSize() > maxSize) {
+            pageable = org.springframework.data.domain.PageRequest.of(pageable.getPageNumber(), maxSize,
+                    pageable.getSort());
+        }
+
+        org.springframework.data.domain.Page<HotelStayResponse> page = hotelStayService.search(name, document, phone,
+                startDate, endDate, pageable);
+
+        return ResponseEntity.ok(page);
     }
 
     // DELETE /api/stay/{stayId} - Excluir reserva apenas se status == RESERVED

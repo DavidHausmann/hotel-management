@@ -1,1 +1,5 @@
-<p>hotel-reservations-page works!</p>
+<app-breadcrumbs
+  [previousPageText]="'Home'"
+  [currentPageText]="'Reservas'"
+  (backFunction)="goToHome()"
+></app-breadcrumbs>

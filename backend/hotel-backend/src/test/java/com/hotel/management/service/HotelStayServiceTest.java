@@ -182,4 +182,29 @@ public class HotelStayServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> service.deleteReservationIfReserved(51L));
     }
+
+    @Test
+    void search_returns_paged_results() {
+        HotelGuest guest = new HotelGuest();
+        guest.setId(2L);
+        guest.setName("João Silva");
+
+        HotelStay stay = new HotelStay();
+        stay.setId(200L);
+        stay.setHotelGuest(guest);
+        stay.setStatus(HotelStayStatus.RESERVED);
+
+        org.springframework.data.domain.Page<HotelStay> page = new org.springframework.data.domain.PageImpl<>(
+                java.util.List.of(stay));
+
+        when(stayRepository.findByFilters(any(), any(), any(), any(), any(),
+                any(org.springframework.data.domain.Pageable.class)))
+                .thenReturn(page);
+
+        org.springframework.data.domain.Page<HotelStayResponse> result = service.search("João", null, null, null, null,
+                org.springframework.data.domain.PageRequest.of(0, 10));
+
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(200L);
+    }
 }

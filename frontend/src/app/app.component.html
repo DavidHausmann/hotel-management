@@ -7,6 +7,7 @@
           : 'assets/icons/menu-icon.svg'
       "
       alt="Abrir menu"
+      class="hotel__management__menu__icon"
       (click)="toggleMenu()"
     />
     <img
@@ -48,8 +49,26 @@
 >
   <router-outlet />
 </main>
-<section class="hotel__management__menu" *ngIf="isMenuOpen">
-  <a class="hotel__management__page" routerLink="/home" (click)="isMenuOpen = false">Home</a>
-  <a class="hotel__management__page" routerLink="/hospedes" (click)="isMenuOpen = false">Hóspedes</a>
-  <a class="hotel__management__page" routerLink="/reservas" (click)="isMenuOpen = false">Reservas</a>
+<section
+  class="hotel__management__menu"
+  [ngClass]="{ 'hotel__management__menu--open': isMenuOpen }"
+>
+  <a
+    class="hotel__management__page"
+    routerLink="/home"
+    (click)="isMenuOpen = false"
+    >Home</a
+  >
+  <a
+    class="hotel__management__page"
+    routerLink="/hospedes"
+    (click)="isMenuOpen = false"
+    >Hóspedes</a
+  >
+  <a
+    class="hotel__management__page"
+    routerLink="/reservas"
+    (click)="isMenuOpen = false"
+    >Reservas</a
+  >
 </section>

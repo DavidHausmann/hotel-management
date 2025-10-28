@@ -1,0 +1,12 @@
+<section class="breadcrumb">
+  <div class="breadcrumb__previous" (click)="goToPreviousPage()">
+    <img
+      src="assets/icons/left.svg"
+      alt="Voltar para a página anterior"
+      class="breadcrumb__previous__icon"
+    />
+    <p class="breadcrumb__previous__text">{{ previousPageText }}</p>
+  </div>
+  <img src="assets/icons/chevron-right.svg" alt="" class="breadcrumb__icon" />
+  <p class="breadcrumb__current__text">{{ currentPageText }}</p>
+</section>

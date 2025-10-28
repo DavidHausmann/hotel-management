@@ -1,1 +1,28 @@
-<p>hotel-guests-page works!</p>
+<section class="hotel__guests__actions">
+  <app-breadcrumbs
+    [previousPageText]="'Home'"
+    [currentPageText]="'Hóspedes'"
+    (backFunction)="goToHome()"
+  ></app-breadcrumbs>
+  <div class="hotel__guests__actions__buttons">
+    <button class="hotel__guests__actions__button">
+      <img
+        src="assets/icons/add-user.svg"
+        alt="Adicionar novo hóspede"
+        class="hotel__guests__actions__button__icon"
+      />
+      Adicionar Hóspede
+    </button>
+    <button class="hotel__guests__actions__button">
+      <img
+        src="assets/icons/filter.svg"
+        alt="Filtrar hóspedes"
+        class="hotel__guests__actions__button__icon"
+      />
+      Filtrar Hóspedes
+    </button>
+  </div>
+</section>
+<section class="hotel__guests__list">
+    <app-hotel-guests-table></app-hotel-guests-table>
+</section>
