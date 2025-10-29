@@ -1,0 +1,91 @@
+<mat-dialog-content>
+  <div class="checkout__preview__header">
+    <h2 mat-dialog-title class="checkout__preview__title">
+      Preview de Check-out
+    </h2>
+    <p>
+      Informação importante: Check-outs devem ser realizados até as 12 horas.
+      Após este período, será cobrada uma taxa de 50% do valor da diária
+      (Respeitando a variação para dias úteis e finais de semana) até as 14
+      horas. Após as 14 horas, será cobrada a diária completa.
+    </p>
+    <p class="note">
+      Nota de tarifação: se o check-in e o check-out ocorrerem no mesmo dia,
+      será cobrada apenas 1 diária — não aplicamos multa nem diária extra para
+      saídas no mesmo dia (regra atual C2).
+    </p>
+  </div>
+  <div class="controls">
+    <mat-form-field appearance="outline" style="flex-grow: 1">
+      <mat-label>Checkout (data e hora)</mat-label>
+      <input
+        readonly
+        matInput
+        type="datetime-local"
+        [(ngModel)]="checkoutLocal"
+      />
+    </mat-form-field>
+    <button
+      mat-stroked-button
+      color="primary"
+      class="controls__button"
+      (click)="loadPreview(true)"
+      [disabled]="loading"
+    >
+      Atualizar
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <mat-progress-spinner
+      diameter="48"
+      mode="indeterminate"
+    ></mat-progress-spinner>
+  </div>
+
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div *ngIf="preview" class="breakdown">
+    <div class="row">
+      <span>Valor (dias úteis)</span
+      ><span>{{ preview.totalWeekdays | number : "1.2-2" }}</span>
+    </div>
+    <div class="row">
+      <span>Valor (finais de semana)</span
+      ><span>{{ preview.totalWeekends | number : "1.2-2" }}</span>
+    </div>
+    <div class="row">
+      <span>Estacionamento (dias úteis)</span
+      ><span>{{ preview.parkingWeekdays | number : "1.2-2" }}</span>
+    </div>
+    <div class="row">
+      <span>Estacionamento (finais de semana)</span
+      ><span>{{ preview.parkingWeekends | number : "1.2-2" }}</span>
+    </div>
+    <div class="row">
+      <span>Taxas extras</span
+      ><span>{{ preview.extraFees | number : "1.2-2" }}</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="row total">
+      <span>Total</span
+      ><span>{{ preview.totalAmount | number : "1.2-2" }}</span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="center">
+  <button mat-stroked-button (click)="onCancel()" [disabled]="loading">
+    Fechar
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="onConfirm()"
+    [disabled]="loading || !preview"
+  >
+    Confirmar check-out
+  </button>
+</mat-dialog-actions>

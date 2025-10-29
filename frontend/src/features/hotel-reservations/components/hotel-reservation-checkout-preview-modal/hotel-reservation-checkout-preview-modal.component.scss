@@ -1,0 +1,48 @@
+.checkout__preview__header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    text-align: justify;
+    margin-bottom: 24px;
+}
+.controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  .controls__button {
+    margin-top: 8px;
+  }
+}
+.loading {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+}
+.error {
+  color: #b00020;
+  margin: 8px 0;
+}
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+.divider {
+  border-top: 1px solid #eee;
+  margin: 8px 0;
+}
+.total {
+  font-weight: 600;
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}

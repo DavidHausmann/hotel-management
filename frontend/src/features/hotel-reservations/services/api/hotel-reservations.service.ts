@@ -64,4 +64,24 @@ export class HotelReservationsService {
   createReservation(hotelGuestId: number, body: { plannedStartDate: string; plannedEndDate: string; numberOfGuests: number }) {
     return this.http.post<ReservationResponse>(`${this.API}api/stay/reserve/${hotelGuestId}`, body);
   }
+
+  getCheckoutPreview(id: number, checkoutTime: string) {
+    const params = new HttpParams().set('checkoutTime', checkoutTime);
+    return this.http.get<{
+      totalWeekdays: number;
+      totalWeekends: number;
+      parkingWeekdays: number;
+      parkingWeekends: number;
+      extraFees: number;
+      totalAmount: number;
+    }>(`${this.API}api/stay/${id}/checkout-preview`, { params });
+  }
+
+  checkout(id: number, checkoutTime: string) {
+    return this.http.patch<ReservationResponse>(`${this.API}api/stay/${id}/checkout`, { checkoutTime });
+  }
+
+  checkin(id: number, checkinTime: string) {
+    return this.http.patch<ReservationResponse>(`${this.API}api/stay/${id}/checkin`, { checkinTime });
+  }
 }

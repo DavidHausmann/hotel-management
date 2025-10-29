@@ -19,6 +19,10 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import com.hotel.management.dto.CheckoutPreviewResponse;
+import com.hotel.management.dto.ErrorResponse;
+import com.hotel.management.exception.ResourceNotFoundException;
+import java.time.format.DateTimeParseException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -34,7 +38,6 @@ public class HotelStayController {
         this.hotelStayService = hotelStayService;
     }
 
-    
     @Operation(summary = "Create reservation", description = "Create a reservation for an existing guest (status RESERVED)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Reservation created successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = HotelStayResponse.class), examples = @ExampleObject(value = "{\"id\":1,\"status\":\"RESERVED\",\"hotelGuestId\":42}"))),
@@ -49,7 +52,6 @@ public class HotelStayController {
         return ResponseEntity.ok(saved);
     }
 
-    
     @Operation(summary = "Check-in", description = "Perform check-in for an existing reservation. Provide checkinTime in ISO format in the request body.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Check-in successful", content = @Content(mediaType = "application/json", schema = @Schema(implementation = HotelStayResponse.class), examples = @ExampleObject(value = "{\"id\":1,\"status\":\"CHECKED_IN\",\"checkinTime\":\"2025-10-26T14:00:00\"}"))),
@@ -63,14 +65,12 @@ public class HotelStayController {
                     @ExampleObject(name = "standard-checkin", value = "{\"checkinTime\": \"2025-10-26T14:00:00\"}"),
                     @ExampleObject(name = "early-checkin", value = "{\"checkinTime\": \"2025-10-26T10:30:00\"}")
             })) @RequestBody Map<String, String> request) {
-        
-        
+
         LocalDateTime checkinTime = LocalDateTime.parse(request.get("checkinTime"));
 
         try {
             HotelStayResponse updated = hotelStayService.checkIn(stayId, checkinTime);
 
-            
             if (checkinTime.getHour() < 14) {
                 return ResponseEntity.status(200)
                         .header("X-Checkin-Alert", "ALERTA: Check-in realizado antes das 14h00min.")
@@ -83,7 +83,6 @@ public class HotelStayController {
         }
     }
 
-    
     @Operation(summary = "Check-out", description = "Perform checkout for an active stay and calculate total amount. Provide checkoutTime in ISO format in the request body.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Checkout successful with totalAmount populated", content = @Content(mediaType = "application/json", schema = @Schema(implementation = HotelStayResponse.class), examples = @ExampleObject(value = "{\"id\":1,\"status\":\"CHECKED_OUT\",\"totalAmount\":360.0}"))),
@@ -97,34 +96,28 @@ public class HotelStayController {
                     @ExampleObject(name = "standard-checkout", value = "{\"checkoutTime\": \"2025-10-27T11:00:00\"}"),
                     @ExampleObject(name = "late-checkout", value = "{\"checkoutTime\": \"2025-10-27T13:30:00\"}")
             })) @RequestBody Map<String, String> request) {
-        
-        
+
         LocalDateTime checkoutTime = LocalDateTime.parse(request.get("checkoutTime"));
 
         try {
             HotelStayResponse updated = hotelStayService.checkOut(stayId, checkoutTime);
-            
-            
+
             return ResponseEntity.ok(updated);
         } catch (Exception error) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    
     @GetMapping("/currently-in")
     public ResponseEntity<List<HotelStayResponse>> findHotelGuestsCurrentlyInHotel() {
         return ResponseEntity.ok(hotelStayService.findHotelGuestsCurrentlyInHotel());
     }
 
-    
     @GetMapping("/pending-reservations")
     public ResponseEntity<List<HotelStayResponse>> findHotelGuestsWithPendingReservations() {
         return ResponseEntity.ok(hotelStayService.findHotelGuestsWithPendingReservations());
     }
 
-    
-    
     @GetMapping("/search")
     public ResponseEntity<org.springframework.data.domain.Page<HotelStayResponse>> searchReservations(
             @RequestParam(required = false) String name,
@@ -133,7 +126,7 @@ public class HotelStayController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             Pageable pageable) {
-        
+
         int maxSize = 30;
         if (pageable.getPageSize() > maxSize) {
             pageable = org.springframework.data.domain.PageRequest.of(pageable.getPageNumber(), maxSize,
@@ -146,7 +139,6 @@ public class HotelStayController {
         return ResponseEntity.ok(page);
     }
 
-    
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Reserva excluída com sucesso"),
             @ApiResponse(responseCode = "400", description = "Requisição inválida - reserva não pode ser excluída ou inválida", content = @Content(mediaType = "application/json", schema = @Schema(implementation = com.hotel.management.dto.ErrorResponse.class))),
@@ -157,5 +149,46 @@ public class HotelStayController {
             @Parameter(description = "ID of the stay to delete", required = true) @PathVariable Long stayId) {
         hotelStayService.deleteReservationIfReserved(stayId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Checkout preview", description = "Preview the amounts to be charged for a checkout time (breakdown by weekday/weekend, parking and extra fees)")
+    @GetMapping("/{stayId}/checkout-preview")
+    public ResponseEntity<?> previewCheckout(
+            @Parameter(description = "ID of the stay to preview checkout for", required = true) @PathVariable Long stayId,
+            @Parameter(description = "Desired checkout time in ISO format, e.g. 2025-10-27T11:00:00", required = true) @RequestParam String checkoutTime) {
+
+        try {
+            LocalDateTime ct = LocalDateTime.parse(checkoutTime);
+            CheckoutPreviewResponse dto = hotelStayService.previewCheckout(stayId, ct);
+            return ResponseEntity.ok(dto);
+        } catch (ResourceNotFoundException ex) {
+            ErrorResponse err = new ErrorResponse();
+            err.setTimestamp(LocalDateTime.now());
+            err.setStatus(404);
+            err.setError("Not Found");
+            err.setMessage(ex.getMessage());
+            return ResponseEntity.status(404).body(err);
+        } catch (IllegalStateException ex) {
+            ErrorResponse err = new ErrorResponse();
+            err.setTimestamp(LocalDateTime.now());
+            err.setStatus(409);
+            err.setError("Invalid stay state");
+            err.setMessage(ex.getMessage());
+            return ResponseEntity.status(409).body(err);
+        } catch (DateTimeParseException ex) {
+            ErrorResponse err = new ErrorResponse();
+            err.setTimestamp(LocalDateTime.now());
+            err.setStatus(400);
+            err.setError("Invalid datetime");
+            err.setMessage("checkoutTime must be a valid ISO-8601 datetime, e.g. 2025-10-27T11:00:00");
+            return ResponseEntity.badRequest().body(err);
+        } catch (Exception error) {
+            ErrorResponse err = new ErrorResponse();
+            err.setTimestamp(LocalDateTime.now());
+            err.setStatus(500);
+            err.setError("Internal error");
+            err.setMessage(error.getMessage());
+            return ResponseEntity.status(500).body(err);
+        }
     }
 }

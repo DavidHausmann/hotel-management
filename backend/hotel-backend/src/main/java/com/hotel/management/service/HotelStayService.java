@@ -31,6 +31,7 @@ public class HotelStayService {
     private static final double CAR_FEE_WEEKDAY = 15.00;
     private static final double CAR_FEE_WEEKEND = 20.00;
     private static final int CHECKOUT_HOUR_LIMIT = 12;
+    private static final int FULL_DAY_CHECKOUT_HOUR = 14;
     private static final double LATE_CHECKOUT_SURCHARGE = 0.50;
 
     private final HotelStayRepository stayRepository;
@@ -233,15 +234,115 @@ public class HotelStayService {
             totalCost += dailyCost;
         }
 
-        if (checkout.getHour() > CHECKOUT_HOUR_LIMIT) {
-            LocalDate lastNight = checkin.toLocalDate().plusDays(nights - 1);
-            DayOfWeek lastDow = lastNight.getDayOfWeek();
-            boolean lastIsWeekend = lastDow == DayOfWeek.SATURDAY || lastDow == DayOfWeek.SUNDAY;
-            double lastDailyRate = lastIsWeekend ? DAILY_RATE_WEEKEND : DAILY_RATE_WEEKDAY;
-            double surcharge = lastDailyRate * LATE_CHECKOUT_SURCHARGE;
-            totalCost += surcharge;
+        int checkoutHour = checkout.getHour();
+        boolean sameDay = checkout.toLocalDate().isEqual(checkin.toLocalDate());
+
+        if (!sameDay) {
+            if (checkoutHour >= FULL_DAY_CHECKOUT_HOUR) {
+                LocalDate extraNight = checkin.toLocalDate().plusDays(nights);
+                DayOfWeek extraDow = extraNight.getDayOfWeek();
+                boolean extraIsWeekend = extraDow == DayOfWeek.SATURDAY || extraDow == DayOfWeek.SUNDAY;
+                double extraDailyRate = extraIsWeekend ? DAILY_RATE_WEEKEND : DAILY_RATE_WEEKDAY;
+                double extraCarFee = hasCar ? (extraIsWeekend ? CAR_FEE_WEEKEND : CAR_FEE_WEEKDAY) : 0.0;
+                totalCost += (extraDailyRate + extraCarFee);
+            } else if (checkoutHour > CHECKOUT_HOUR_LIMIT) {
+                LocalDate lastNight = checkin.toLocalDate().plusDays(nights - 1);
+                DayOfWeek lastDow = lastNight.getDayOfWeek();
+                boolean lastIsWeekend = lastDow == DayOfWeek.SATURDAY || lastDow == DayOfWeek.SUNDAY;
+                double lastDailyRate = lastIsWeekend ? DAILY_RATE_WEEKEND : DAILY_RATE_WEEKDAY;
+                double surcharge = lastDailyRate * LATE_CHECKOUT_SURCHARGE;
+                totalCost += surcharge;
+            }
         }
 
         return totalCost;
+    }
+
+    public com.hotel.management.dto.CheckoutPreviewResponse previewCheckout(Long stayId,
+            java.time.LocalDateTime checkoutTime) {
+        HotelStay stay = stayRepository.findById(stayId)
+                .orElseThrow(() -> new ResourceNotFoundException("Estadia não encontrada: " + stayId));
+
+        if (stay.getStatus() != HotelStayStatus.CHECKED_IN || stay.getCheckinTime() == null) {
+            throw new IllegalStateException("O preview de checkout só pode ser solicitado para estadias ATIVAS.");
+        }
+
+        boolean hasCar = stay.getHotelGuest() != null && stay.getHotelGuest().isHasCar();
+        return calculateCheckoutBreakdown(stay.getCheckinTime(), checkoutTime, hasCar);
+    }
+
+    private com.hotel.management.dto.CheckoutPreviewResponse calculateCheckoutBreakdown(LocalDateTime checkin,
+            LocalDateTime checkout, boolean hasCar) {
+        long nights = ChronoUnit.DAYS.between(checkin.toLocalDate(), checkout.toLocalDate());
+        if (nights <= 0)
+            nights = 1;
+
+        double totalWeekdays = 0.0;
+        double totalWeekends = 0.0;
+        double parkingWeekdays = 0.0;
+        double parkingWeekends = 0.0;
+
+        for (int i = 0; i < nights; i++) {
+            LocalDate nightDate = checkin.toLocalDate().plusDays(i);
+            DayOfWeek dayOfWeek = nightDate.getDayOfWeek();
+            boolean isWeekend = dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
+            double dailyRate = isWeekend ? DAILY_RATE_WEEKEND : DAILY_RATE_WEEKDAY;
+            double carFee = hasCar ? (isWeekend ? CAR_FEE_WEEKEND : CAR_FEE_WEEKDAY) : 0.0;
+
+            if (isWeekend) {
+                totalWeekends += dailyRate;
+                parkingWeekends += carFee;
+            } else {
+                totalWeekdays += dailyRate;
+                parkingWeekdays += carFee;
+            }
+        }
+
+        double extraFees = 0.0;
+        int checkoutHour2 = checkout.getHour();
+        boolean sameDay = checkout.toLocalDate().isEqual(checkin.toLocalDate());
+        double totalAmount = totalWeekdays + totalWeekends + parkingWeekdays + parkingWeekends;
+
+        if (!sameDay) {
+            if (checkoutHour2 >= FULL_DAY_CHECKOUT_HOUR) {
+                LocalDate extraNight = checkin.toLocalDate().plusDays(nights);
+                DayOfWeek extraDow = extraNight.getDayOfWeek();
+                boolean extraIsWeekend = extraDow == DayOfWeek.SATURDAY || extraDow == DayOfWeek.SUNDAY;
+                double extraDailyRate = extraIsWeekend ? DAILY_RATE_WEEKEND : DAILY_RATE_WEEKDAY;
+                double extraCarFee = hasCar ? (extraIsWeekend ? CAR_FEE_WEEKEND : CAR_FEE_WEEKDAY) : 0.0;
+
+                if (extraIsWeekend) {
+                    totalWeekends += extraDailyRate;
+                    parkingWeekends += extraCarFee;
+                } else {
+                    totalWeekdays += extraDailyRate;
+                    parkingWeekdays += extraCarFee;
+                }
+
+                totalAmount += (extraDailyRate + extraCarFee);
+            } else if (checkoutHour2 > CHECKOUT_HOUR_LIMIT) {
+                LocalDate lastNight = checkin.toLocalDate().plusDays(nights - 1);
+                DayOfWeek lastDow = lastNight.getDayOfWeek();
+                boolean lastIsWeekend = lastDow == DayOfWeek.SATURDAY || lastDow == DayOfWeek.SUNDAY;
+                double lastDailyRate = lastIsWeekend ? DAILY_RATE_WEEKEND : DAILY_RATE_WEEKDAY;
+                double surcharge = lastDailyRate * LATE_CHECKOUT_SURCHARGE;
+                extraFees += surcharge;
+                totalAmount += surcharge;
+            }
+        }
+
+        com.hotel.management.dto.CheckoutPreviewResponse dto = new com.hotel.management.dto.CheckoutPreviewResponse();
+        dto.setTotalWeekdays(roundTwo(totalWeekdays));
+        dto.setTotalWeekends(roundTwo(totalWeekends));
+        dto.setParkingWeekdays(roundTwo(parkingWeekdays));
+        dto.setParkingWeekends(roundTwo(parkingWeekends));
+        dto.setExtraFees(roundTwo(extraFees));
+        dto.setTotalAmount(roundTwo(totalAmount));
+
+        return dto;
+    }
+
+    private double roundTwo(double v) {
+        return Math.round(v * 100.0) / 100.0;
     }
 }

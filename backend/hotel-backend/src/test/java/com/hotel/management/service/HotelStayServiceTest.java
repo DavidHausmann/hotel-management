@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.time.LocalDate;
 import com.hotel.management.dto.DashboardResponse;
 import com.hotel.management.exception.ResourceNotFoundException;
+import com.hotel.management.dto.CheckoutPreviewResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -122,6 +123,58 @@ public class HotelStayServiceTest {
         HotelStayResponse afterCheckout = service.checkOut(10L, checkout);
         assertThat(afterCheckout.getStatus()).isEqualTo(HotelStayStatus.CHECKED_OUT);
         assertThat(afterCheckout.getTotalAmount()).isGreaterThan(0.0);
+    }
+
+    @Test
+    void previewCheckout_returns_breakdown_for_weekday_with_car() {
+        HotelGuest guest = new HotelGuest();
+        guest.setId(2L);
+        guest.setHasCar(true);
+
+        HotelStay stay = new HotelStay();
+        stay.setId(11L);
+        stay.setHotelGuest(guest);
+        stay.setStatus(HotelStayStatus.CHECKED_IN);
+        stay.setCheckinTime(LocalDateTime.of(2025, 10, 24, 15, 0));
+
+        when(stayRepository.findById(11L)).thenReturn(Optional.of(stay));
+
+        LocalDateTime checkout = LocalDateTime.of(2025, 10, 25, 11, 0);
+
+        CheckoutPreviewResponse dto = service.previewCheckout(11L, checkout);
+
+        assertThat(dto.getTotalWeekdays()).isEqualTo(120.00);
+        assertThat(dto.getTotalWeekends()).isEqualTo(0.0);
+        assertThat(dto.getParkingWeekdays()).isEqualTo(15.00);
+        assertThat(dto.getParkingWeekends()).isEqualTo(0.0);
+        assertThat(dto.getExtraFees()).isEqualTo(0.0);
+        assertThat(dto.getTotalAmount()).isEqualTo(135.00);
+    }
+
+    @Test
+    void previewCheckout_sameDay_no_surcharge() {
+        HotelGuest guest = new HotelGuest();
+        guest.setId(3L);
+        guest.setHasCar(false);
+
+        HotelStay stay = new HotelStay();
+        stay.setId(12L);
+        stay.setHotelGuest(guest);
+        stay.setStatus(HotelStayStatus.CHECKED_IN);
+        stay.setCheckinTime(LocalDateTime.of(2025, 10, 29, 16, 59));
+
+        when(stayRepository.findById(12L)).thenReturn(Optional.of(stay));
+
+        LocalDateTime checkout = LocalDateTime.of(2025, 10, 29, 17, 1);
+
+        CheckoutPreviewResponse dto = service.previewCheckout(12L, checkout);
+
+        assertThat(dto.getTotalWeekdays()).isEqualTo(120.00);
+        assertThat(dto.getTotalWeekends()).isEqualTo(0.0);
+        assertThat(dto.getParkingWeekdays()).isEqualTo(0.0);
+        assertThat(dto.getParkingWeekends()).isEqualTo(0.0);
+        assertThat(dto.getExtraFees()).isEqualTo(0.0);
+        assertThat(dto.getTotalAmount()).isEqualTo(120.00);
     }
 
     @Test

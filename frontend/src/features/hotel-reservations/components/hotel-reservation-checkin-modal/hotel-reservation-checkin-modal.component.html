@@ -1,0 +1,28 @@
+<mat-dialog-content align="center" class="checkin__modal">
+  <div class="checkin__header">
+    <h2 mat-dialog-title>Realizar Check-in</h2>
+    <p align="justify">Informe o horário de check-in. Por padrão usamos o horário atual (minutos arredondados).</p>
+  </div>
+
+  <div class="controls">
+    <mat-form-field appearance="outline" style="flex-grow:1">
+      <mat-label>Check-in (data e hora)</mat-label>
+      <input readonly matInput type="datetime-local" [(ngModel)]="checkinLocal" />
+    </mat-form-field>
+
+    <button mat-stroked-button color="primary" class="controls__button" (click)="refreshToNow()" [disabled]="loading">
+      Atualizar
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+  </div>
+
+  <div *ngIf="error" class="error">{{ error }}</div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="center">
+  <button mat-stroked-button (click)="onCancel()" [disabled]="loading">Fechar</button>
+  <button mat-flat-button color="primary" (click)="onConfirm()" [disabled]="loading">Confirmar check-in</button>
+</mat-dialog-actions>

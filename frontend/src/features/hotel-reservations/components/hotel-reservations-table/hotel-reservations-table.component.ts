@@ -10,8 +10,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ThemeService } from '../../../../core/services/theme/theme.service';
 import { HotelReservationsDeleteModalComponent } from '../hotel-reservations-delete-modal/hotel-reservations-delete-modal.component';
+import { HotelReservationCheckoutPreviewModalComponent } from '../hotel-reservation-checkout-preview-modal/hotel-reservation-checkout-preview-modal.component';
 import { HotelReservationsService } from '../../services/api/hotel-reservations.service';
 import { HotelReservationsPageService } from '../../services/application/hotel-reservations-page.service';
+import { HotelReservationCheckinModalComponent } from '../hotel-reservation-checkin-modal/hotel-reservation-checkin-modal.component';
 
 
 @Component({
@@ -71,6 +73,35 @@ export class HotelReservationsTableComponent implements OnInit {
   }
 
   openCheckout(element: any) {
+    const panelClass = this.themeService.isDarkMode() ? 'dark__mode' : 'light__mode';
+
+    const dialogRef = this.dialog.open(HotelReservationCheckoutPreviewModalComponent, {
+      data: { id: element.id },
+      width: '520px',
+      panelClass,
+    });
+
+    dialogRef.afterClosed().subscribe((res: any) => {
+      if (!res || !res.confirmed) return;
+      const current = this.pageService.getLastCachedSnapshot()?.pagination.pageNumber || 0;
+      this.loadPage(current);
+    });
+  }
+
+  openCheckin(element: any) {
+    const panelClass = this.themeService.isDarkMode() ? 'dark__mode' : 'light__mode';
+
+    const dialogRef = this.dialog.open(HotelReservationCheckinModalComponent, {
+      data: { id: element.id },
+      width: '520px',
+      panelClass,
+    });
+
+    dialogRef.afterClosed().subscribe((res: any) => {
+      if (!res || !res.confirmed) return;
+      const current = this.pageService.getLastCachedSnapshot()?.pagination.pageNumber || 0;
+      this.loadPage(current);
+    });
   }
 
   openDeleteReservation(element: any) {
