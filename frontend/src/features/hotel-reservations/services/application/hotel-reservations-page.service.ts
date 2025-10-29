@@ -39,13 +39,13 @@ export class HotelReservationsPageService {
   }> {
     this.loading$.next(true);
     return this.api.searchReservations(options || {}, page, size).pipe(
-      map((p) => ({
-        items: p.content,
+      map((page) => ({
+        items: page.content,
         pagination: {
-          total: p.totalElements,
-          totalPages: p.totalPages,
-          pageSize: p.size,
-          pageNumber: p.number,
+          total: page.totalElements,
+          totalPages: page.totalPages,
+          pageSize: page.size,
+          pageNumber: page.number,
         },
       })),
       tap((mapped) => this.cachedPage$.next(mapped)),

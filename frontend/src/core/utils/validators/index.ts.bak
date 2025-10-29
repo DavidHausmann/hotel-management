@@ -1,6 +1,6 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
-
+// CPF utils
 export function onlyDigits(value: string | null | undefined): string {
   return (value || '').replace(/\D+/g, '');
 }
@@ -8,7 +8,7 @@ export function onlyDigits(value: string | null | undefined): string {
 export function isValidCPF(value: string | null | undefined): boolean {
   const cpf = onlyDigits(value);
   if (!cpf || cpf.length !== 11) return false;
-  
+  // reject known invalid CPFs
   if (/^(\d)\1{10}$/.test(cpf)) return false;
 
   const calc = (t: number) => {
@@ -33,8 +33,8 @@ export function cpfValidator(): ValidatorFn {
   };
 }
 
-
-
+// Phone utils
+// Accept phones formatted with a space after the DDD: (DD) 9XXXX-XXXX or (DD) XXXX-XXXX
 export const PHONE_REGEX = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
 
 export function isValidPhone(value: string | null | undefined): boolean {

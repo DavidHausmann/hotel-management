@@ -49,16 +49,16 @@ export class HotelAddReservationPageComponent {
       numberOfGuests: [1, [Validators.required, Validators.min(1)]],
     });
 
-    // Add date range validator (start must be <= end)
-    // Use a ValidatorFn that accepts AbstractControl
+    
+    
     this.form.setValidators((control) => {
       const group = control as FormGroup;
       return this.dateRangeValidator(group);
     });
-    // Re-evaluate validation when values change
+    
     this.form.valueChanges.subscribe(() => this.form.updateValueAndValidity({ onlySelf: true, emitEvent: false }));
 
-    // Auto-adjust end date: when start changes, ensure end >= start + 1 day
+    
     this.form.get('plannedStartDate')?.valueChanges.subscribe((val: Date | null) => {
       if (!val) return;
       try {
@@ -74,8 +74,8 @@ export class HotelAddReservationPageComponent {
             endCtrl?.setValue(minEnd);
           }
         }
-      } catch (e) {
-        // ignore formatting errors
+      } catch (error) {
+        
       }
     });
 
@@ -115,7 +115,7 @@ export class HotelAddReservationPageComponent {
     });
   }
 
-  // Datepicker filter: start date cannot be before today
+  
   startDateFilterFn = (d: Date | null): boolean => {
     if (!d) return true;
     const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -123,12 +123,12 @@ export class HotelAddReservationPageComponent {
     return date >= today;
   };
 
-  // Datepicker filter: end date cannot be before selected start date (or today if none)
+  
   endDateFilterFn = (d: Date | null): boolean => {
     if (!d) return true;
     const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
     const startVal = this.form.get('plannedStartDate')?.value;
-    // minimum is start + 1 day, or today + 1 if no start
+    
     let minDate: Date;
     if (startVal) {
       const s = new Date(startVal.getFullYear(), startVal.getMonth(), startVal.getDate());
@@ -140,7 +140,7 @@ export class HotelAddReservationPageComponent {
     return date >= minDate;
   };
 
-  // Validator that ensures plannedStartDate <= plannedEndDate
+  
   private dateRangeValidator = (group: FormGroup) => {
     const start = group.get('plannedStartDate')?.value;
     const end = group.get('plannedEndDate')?.value;
@@ -149,7 +149,7 @@ export class HotelAddReservationPageComponent {
       const e = new Date(end.getFullYear(), end.getMonth(), end.getDate());
       const msPerDay = 24 * 60 * 60 * 1000;
       const diffDays = Math.round((e.getTime() - s.getTime()) / msPerDay);
-      // require end >= start + 1 day
+      
       if (diffDays < 1) {
         return { dateRange: true };
       }

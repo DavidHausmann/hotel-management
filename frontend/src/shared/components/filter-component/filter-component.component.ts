@@ -23,7 +23,7 @@ export class FilterComponent {
   }
 
   onClick(e: Event) {
-    // stop clicks from bubbling to outer UI if used inside overlays
+    
     e.stopPropagation();
   }
 
@@ -35,14 +35,14 @@ export class FilterComponent {
     this.clearFiltersEvent.emit();
   }
   close() {
-    // request an animated close
+    
     this.startClose();
   }
 
   startClose() {
     if (this.isClosing) return;
     this.isClosing = true;
-    // safety fallback in case animationend isn't fired
+    
     setTimeout(() => {
       if (this.isClosing) {
         this.isClosing = false;

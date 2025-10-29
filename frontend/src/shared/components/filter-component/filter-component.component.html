@@ -1,8 +1,6 @@
-<!-- Overlay with backdrop -->
 <div class="filter__overlay">
   <div class="filter__backdrop" (click)="close()" [class.closing]="isClosing"></div>
 
-  <!-- Panel: clicking inside should not propagate to backdrop -->
   <div
     class="filter__panel"
     [ngClass]="isDarkMode() ? 'panel--dark' : 'panel--light'"

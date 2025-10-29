@@ -73,8 +73,8 @@ export class HotelAddGuestPageComponent {
   }
 
   ngOnInit(): void {
-    
-    
+    // First, check whether navigation state carried a guest object (when navigating from the table).
+    // Using navigation state avoids an extra HTTP request when the table already has the guest data.
     const navState: any = history.state || {};
     const guestFromState = navState.guest;
 
@@ -86,7 +86,7 @@ export class HotelAddGuestPageComponent {
         this.guestId = id;
 
         if (guestFromState && guestFromState.id === id) {
-          
+          // Prefill from navigation state; no HTTP request.
           const doc = new FormatDocumentPipe().transform(guestFromState.document);
           const phone = new FormatPhonePipe().transform(guestFromState.phone);
           this.form.patchValue({
@@ -96,7 +96,7 @@ export class HotelAddGuestPageComponent {
             hasCar: !!guestFromState.hasCar,
           });
         } else {
-          
+          // No state available (direct link/bookmark) -> fetch from API
           this.api.getGuest(id).subscribe({
             next: (guest) => {
               const doc = new FormatDocumentPipe().transform(guest.document);

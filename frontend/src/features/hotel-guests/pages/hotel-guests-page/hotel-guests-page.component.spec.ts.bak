@@ -13,7 +13,7 @@ describe('HotelGuestsPageComponent', () => {
   let component: HotelGuestsPageComponent;
   let fixture: ComponentFixture<HotelGuestsPageComponent>;
 
-  
+  // simple stubs for child components (ViewChild targets)
   class StubTable {
     filterName?: string | undefined;
     filterDocument?: string | undefined;
@@ -26,7 +26,7 @@ describe('HotelGuestsPageComponent', () => {
 
   class StubFilterComp {
     startClose = jasmine.createSpy('startClose');
-    
+    // simulate outputs the real FilterComponent exposes
     applyFilters = new EventEmitter<any>();
     clearFilters = new EventEmitter<void>();
   }
@@ -49,7 +49,7 @@ describe('HotelGuestsPageComponent', () => {
 
     fixture = TestBed.createComponent(HotelGuestsPageComponent);
     component = fixture.componentInstance;
-    
+    // do not call detectChanges yet — attach stubs first to avoid timing issues
     const stubTable = new StubTable();
     const stubFilter = new StubFilterComp();
     component.table = stubTable as any;
@@ -82,7 +82,7 @@ describe('HotelGuestsPageComponent', () => {
   });
 
   it('should apply filters and call table.loadPage and filter startClose', () => {
-    
+    // attach a fresh stub so we can inspect spies
     const stubTable = new StubTable();
     const stubFilter = new StubFilterComp();
     component.table = stubTable as any;
@@ -159,14 +159,14 @@ describe('HotelGuestsPageComponent', () => {
     component.table = stubTable as any;
     component.filterComp = stubFilter as any;
 
-    
+    // simulate the filter UI being visible and user-entered values
     component.showFilters = true;
     component.filterName = 'Dana';
     component.filterDocument = '444';
     component.filterPhone = '111';
     component.filterStatus = 'CHECKED_IN';
 
-    
+    // call the handlers as the template would when FilterComponent emits
     component.onApplyFilters();
 
     expect((component.table as any).filterName).toBe('Dana');
@@ -175,7 +175,7 @@ describe('HotelGuestsPageComponent', () => {
     expect((component.table as any).filterInHotel).toBeTrue();
     expect((component.table as any).loadPage).toHaveBeenCalledWith(0);
 
-    
+    // call clear to ensure table.clearFilters is invoked and locals reset
     component.onClearFilters();
     expect((component.table as any).clearFilters).toHaveBeenCalled();
     expect(component.filterName).toBe('');

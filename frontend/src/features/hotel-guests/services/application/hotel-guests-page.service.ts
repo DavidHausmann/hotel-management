@@ -13,11 +13,8 @@ import { HotelGuestFilters } from '../../shared/hotel-guests.model';
 export class HotelGuestsPageService {
   constructor(private api: HotelGuestsService) {}
 
-  /**
-   * Fetch a page of hotel guests and map to a compact shape for components.
-   * Returns an object with `items` and `pagination` metadata.
-   */
-  // internal cache of the last fetched page (null if none yet)
+  
+  
   private cachedPage$ = new BehaviorSubject<{
     items: HotelGuestResponse[];
     pagination: {
@@ -29,11 +26,7 @@ export class HotelGuestsPageService {
   } | null>(null);
   private loading$ = new BehaviorSubject<boolean>(false);
 
-  /**
-   * Fetch a page of hotel guests and map to a compact shape for components.
-   * Returns an object with `items` and `pagination` metadata and caches the
-   * latest result inside this service.
-   */
+  
   fetchGuestsPage(
     options?: HotelGuestFilters,
     page = 0,
@@ -47,29 +40,26 @@ export class HotelGuestsPageService {
       pageNumber: number;
     };
   }> {
-    // trigger loading state synchronously so UI can react immediately
+    
     this.loading$.next(true);
     return this.api.searchGuests(options || {}, page, size).pipe(
-      map((p) => ({
-        items: p.content,
+      map((page) => ({
+        items: page.content,
         pagination: {
-          total: p.totalElements,
-          totalPages: p.totalPages,
-          pageSize: p.size,
-          pageNumber: p.number,
+          total: page.totalElements,
+          totalPages: page.totalPages,
+          pageSize: page.size,
+          pageNumber: page.number,
         },
       })),
-      // store the latest value in the BehaviorSubject so components can subscribe
+      
       tap((mapped) => this.cachedPage$.next(mapped)),
-      // finalize will run on complete or error
+      
       finalize(() => this.loading$.next(false))
     );
   }
 
-  /**
-   * Returns an Observable that emits the latest cached page (or null if none).
-   * Components can subscribe to receive updates when fetchGuestsPage(...) is called.
-   */
+  
   getCachedGuestsPage(): Observable<{
     items: HotelGuestResponse[];
     pagination: {
@@ -82,9 +72,7 @@ export class HotelGuestsPageService {
     return this.cachedPage$.asObservable();
   }
 
-  /**
-   * Synchronous snapshot of the last cached page (or null if none).
-   */
+  
   getLastCachedSnapshot(): {
     items: HotelGuestResponse[];
     pagination: {
@@ -97,9 +85,7 @@ export class HotelGuestsPageService {
     return this.cachedPage$.getValue();
   }
 
-  /**
-   * Observable of the loading state for the last fetchGuestsPage call.
-   */
+  
   getLoading(): Observable<boolean> {
     return this.loading$.asObservable();
   }

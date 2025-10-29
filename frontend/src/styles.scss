@@ -1,10 +1,6 @@
 @use "@angular/material" as mat;
 
-/*
-  Angular Material theming (Option B): define a light and a dark theme
-  and include component styles. The dark theme is applied under the
-  `.dark__mode` root class which the app toggles at runtime.
-*/
+
 
 @include mat.core();
 

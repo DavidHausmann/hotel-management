@@ -27,7 +27,7 @@ export class CpfMaskDirective {
     try {
       this.control.control?.setValue(v, { emitEvent: false });
     } catch (err) {
-      
+      // fallback: directly set native value
       const el = (this.control as any).valueAccessor?.element || null;
       if (el) el.value = v;
     }

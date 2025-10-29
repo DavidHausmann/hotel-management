@@ -40,7 +40,7 @@ export class HotelReservationsPageComponent {
   @ViewChild(HotelReservationsTableComponent) table!: HotelReservationsTableComponent;
   @ViewChild(FilterComponent) filterComp?: FilterComponent;
 
-  // UI state for filter panel
+  
   showFilters = false;
   filterName = '';
   filterDocument = '';

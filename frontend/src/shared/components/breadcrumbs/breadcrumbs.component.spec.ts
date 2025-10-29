@@ -20,4 +20,10 @@ describe('BreadcrumbsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should emit backFunction when goToPreviousPage is called', () => {
+    const spy = spyOn(component.backFunction, 'emit');
+    component.goToPreviousPage();
+    expect(spy).toHaveBeenCalled();
+  });
 });

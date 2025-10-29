@@ -36,12 +36,12 @@ export class HotelGuestsPageComponent {
   @ViewChild(HotelGuestsTableComponent) table!: HotelGuestsTableComponent;
   @ViewChild(FilterComponent) filterComp?: FilterComponent;
 
-  
+  // UI state for filter panel
   showFilters = false;
   filterName = '';
   filterDocument = '';
   filterPhone = '';
-  
+  // single status select: '', 'CHECKED_IN' (maps to inHotel), 'RESERVED' (maps to reserved)
   filterStatus: '' | 'CHECKED_IN' | 'RESERVED' = '';
 
   constructor(private router: Router) {}
@@ -63,7 +63,7 @@ export class HotelGuestsPageComponent {
     this.table.filterName = this.filterName || undefined;
     this.table.filterDocument = this.filterDocument || undefined;
     this.table.filterPhone = this.filterPhone || undefined;
-    
+    // map status to existing boolean filters expected by the table/service
     if (this.filterStatus === 'CHECKED_IN') {
       this.table.filterInHotel = true;
       this.table.filterReserved = null;
@@ -75,24 +75,24 @@ export class HotelGuestsPageComponent {
       this.table.filterReserved = null;
     }
     this.table.loadPage(0);
-    
+    // request the filter component to animate out; it will emit closeEvent when done
     this.filterComp?.startClose();
   }
 
   onClearFilters() {
-    
+    // reset local fields
   this.filterName = '';
   this.filterDocument = '';
   this.filterPhone = '';
   this.filterStatus = '';
-    
+    // ask table to clear its filters and reload
     this.table.clearFilters();
-    
+    // animate out the filter panel
     this.filterComp?.startClose();
   }
 
   onCloseFilters() {
-    
+    // Close the filter panel without applying or clearing filters.
     this.showFilters = false;
   }
 }

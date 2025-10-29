@@ -1,5 +1,6 @@
 .hotel__management__header {
-  min-height: 72px;
+  min-height: 86px;
+  height: 86px;
   width: 100%;
   display: flex;
   align-items: center;
@@ -65,7 +66,7 @@
   }
 }
 .hotel__management__main {
-  height: calc(100vh - 72px);
+  height: calc(100vh - 86px);
   padding: 40px 32px;
 }
 .dark__mode {
@@ -78,11 +79,11 @@
 }
 .hotel__management__menu {
   position: fixed;
-  top: 71px;
+  top: 85px;
   left: 0;
   width: 100%;
   max-height: 0;
-  height: calc(100vh - 71px);
+  height: calc(100vh - 85px);
   background-color: var(--hotel-management-primary);
   padding: 0 32px;
   overflow: hidden;

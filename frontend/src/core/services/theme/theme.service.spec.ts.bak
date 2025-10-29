@@ -9,7 +9,7 @@ describe('ThemeService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(ThemeService);
-    
+    // ensure document classList is clean before each test
     document.documentElement.classList.remove('theme--light', 'theme--dark');
     localStorage.removeItem(STORAGE_KEY);
   });
@@ -44,9 +44,9 @@ describe('ThemeService', () => {
   });
 
   it('init should fallback to prefers-color-scheme when no stored value', () => {
-    
+    // ensure no stored value
     spyOn(localStorage, 'getItem').and.returnValue(null);
-    
+    // stub matchMedia to indicate prefers dark
     const originalMatch = (window as any).matchMedia;
     (window as any).matchMedia = () => ({ matches: true }) as any;
     try {

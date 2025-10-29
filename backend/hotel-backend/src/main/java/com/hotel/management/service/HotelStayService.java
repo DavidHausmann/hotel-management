@@ -71,10 +71,10 @@ public class HotelStayService {
         try {
             Page<HotelStay> page = stayRepository.findByFilters(n, d, p, start, end, pageable);
             return page.map(this::mapToResponse);
-        } catch (Exception ex) {
+        } catch (Exception error) {
             // Fall back to in-memory filtering when DB schema causes SQL errors (eg. bytea
             // issues)
-            log.warn("findByFilters failed, falling back to in-memory filtering", ex);
+            log.warn("findByFilters failed, falling back to in-memory filtering", error);
             List<HotelStay> all = stayRepository.findAll();
 
             List<HotelStay> filtered = all.stream().filter(s -> {

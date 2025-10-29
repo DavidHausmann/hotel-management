@@ -22,7 +22,7 @@ export class ThemeService {
         this.attachStorageListener();
         return;
       }
-    } catch (e) {}
+  } catch (error) {}
 
     if (typeof window !== 'undefined' && 'matchMedia' in window) {
       const prefersDark = window.matchMedia(
@@ -49,7 +49,7 @@ export class ThemeService {
     this.theme = t;
     try {
       localStorage.setItem(STORAGE_KEY, t);
-    } catch (e) {}
+  } catch (error) {}
     this.applyThemeToDocument(t);
   }
 
@@ -63,7 +63,7 @@ export class ThemeService {
       const html = document.documentElement;
       html.classList.remove('theme--light', 'theme--dark');
       html.classList.add(`theme--${theme}`);
-    } catch (e) {}
+  } catch (error) {}
   }
 
   private attachStorageListener() {
@@ -80,6 +80,6 @@ export class ThemeService {
           this.applyThemeToDocument(this.theme);
         }
       });
-    } catch (e) {}
+  } catch (error) {}
   }
 }

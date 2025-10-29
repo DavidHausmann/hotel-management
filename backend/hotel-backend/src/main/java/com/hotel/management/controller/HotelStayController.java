@@ -78,7 +78,7 @@ public class HotelStayController {
             }
 
             return ResponseEntity.ok(updated);
-        } catch (Exception e) {
+        } catch (Exception error) {
             return ResponseEntity.badRequest().build();
         }
     }
@@ -106,7 +106,7 @@ public class HotelStayController {
             // Requisito: Exibir em detalhes o total geral - O objeto retornado já contém
             // 'totalAmount'.
             return ResponseEntity.ok(updated);
-        } catch (Exception e) {
+        } catch (Exception error) {
             return ResponseEntity.badRequest().build();
         }
     }

@@ -18,7 +18,7 @@ export class PhoneMaskDirective {
     if (digits.length <= 2) {
       formatted = digits;
     } else if (digits.length <= 6) {
-      
+      // add space after DDD
       formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
     } else if (digits.length <= 10) {
       // (DD) XXXX-XXXX

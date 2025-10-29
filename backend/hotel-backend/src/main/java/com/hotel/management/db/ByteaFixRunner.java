@@ -60,8 +60,8 @@ public class ByteaFixRunner implements CommandLineRunner {
                     String dt = rs.getString("data_type");
                     log.info("hotel_guest.{} has data_type={}", col, dt);
                 }
-            } catch (Exception e) {
-                log.warn("Could not read current column types", e);
+            } catch (Exception error) {
+                log.warn("Could not read current column types", error);
             }
 
             String sql = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
@@ -79,8 +79,8 @@ public class ByteaFixRunner implements CommandLineRunner {
                     String schema = rs2.getString("table_schema");
                     log.info("after-migration: hotel_guest (schema={}).{} has data_type={}", schema, col, dt);
                 }
-            } catch (Exception e) {
-                log.warn("Could not read post-migration column types", e);
+            } catch (Exception error) {
+                log.warn("Could not read post-migration column types", error);
             }
 
             log.info("Bytea->text migration script executed (if any conversion was needed).");
@@ -92,12 +92,12 @@ public class ByteaFixRunner implements CommandLineRunner {
                 } else {
                     log.info("runtime-test: no rows to test lower(name)");
                 }
-            } catch (Exception e) {
-                log.error("runtime-test: selecting lower(name) failed", e);
+            } catch (Exception error) {
+                log.error("runtime-test: selecting lower(name) failed", error);
             }
-        } catch (Exception e) {
-            log.error("Failed to execute migration script", e);
-            throw e;
+        } catch (Exception error) {
+            log.error("Failed to execute migration script", error);
+            throw error;
         }
     }
 }

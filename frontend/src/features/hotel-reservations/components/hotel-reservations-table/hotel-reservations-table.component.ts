@@ -44,14 +44,14 @@ export class HotelReservationsTableComponent implements OnInit {
     'actions',
   ];
 
-  // simple reactive state mirroring guests table
+  
   pageSize = 10;
-  // filter state
+  
   filterName: string | undefined;
   filterDocument: string | undefined;
   filterPhone: string | undefined;
-  filterStartDate: string | undefined; // YYYY-MM-DD
-  filterEndDate: string | undefined; // YYYY-MM-DD
+  filterStartDate: string | undefined; 
+  filterEndDate: string | undefined; 
 
   get page$() {
     return this.pageService.getCachedReservationsPage();

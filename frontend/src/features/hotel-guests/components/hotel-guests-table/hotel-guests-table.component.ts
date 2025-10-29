@@ -54,8 +54,8 @@ export class HotelGuestsTableComponent {
     return this.pageService.getLoading();
   }
   pageSize = 10;
-  // filter state
-  filterInHotel: boolean | null = null; // null -> not applied; true/false -> applied
+  
+  filterInHotel: boolean | null = null; 
   filterReserved: boolean | null = null;
   filterName: string | undefined;
   filterDocument: string | undefined;
@@ -69,13 +69,13 @@ export class HotelGuestsTableComponent {
   ) {}
 
   openScheduleReservation(element: any) {
-    // navigate to reservation creation page with guest id
+    
     this.router.navigate(['/reservas/adicionar', element.id]);
   }
 
   openEditGuest(element: any) {
-    // navigate to the add/edit page with the guest id so the page loads in edit mode
-    // pass the guest object in navigation state so the add/edit page can prefill without an HTTP request
+    
+    
     this.router.navigate(['/adicionar-hospede', element.id], {
       state: { guest: element },
     });

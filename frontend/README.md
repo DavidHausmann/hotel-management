@@ -44,6 +44,14 @@ To execute unit tests with the [Karma](https://karma-runner.github.io) test runn
 ng test
 ```
 
+Note: this project uses a custom Karma configuration (`karma.conf.js`) with a CI-friendly headless Chrome launcher and increased timeouts to reduce intermittent browser disconnects. To run the tests headlessly (recommended for CI or fast local runs) use:
+
+```powershell
+npm run test -- --watch=false --browsers=ChromeHeadlessCustom
+```
+
+The custom launcher flags and timeouts are configured in `frontend/karma.conf.js` — adjust them if your CI environment needs different Chrome flags.
+
 ## Running end-to-end tests
 
 For end-to-end (e2e) testing, run:

@@ -79,9 +79,9 @@ public class HotelGuestService {
 
         try {
             return hotelGuestRepository.findByFilters(n, d, p, inHotelFilter, reservedFilter, pageable);
-        } catch (Exception ex) {
+        } catch (Exception error) {
             // Fall back to in-memory filtering when the DB schema causes SQL errors
-            log.warn("findByFilters failed, falling back to in-memory filtering", ex);
+            log.warn("findByFilters failed, falling back to in-memory filtering", error);
             List<HotelGuest> all = hotelGuestRepository.findAll();
             // Preload stays to support in-memory evaluation of the new filters
             List<com.hotel.management.model.HotelStay> allStays = hotelStayRepository.findAll();
