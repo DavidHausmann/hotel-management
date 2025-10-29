@@ -64,6 +64,8 @@
   transition: transform 200ms ease, width 200ms ease;
   /* default panel width for mobile (full screen) */
   width: 100%;
+  /* slide-in animation when the panel is inserted */
+  animation: slideInRight 240ms ease-out both;
 }
 
 .filter__panel .card {
@@ -103,6 +105,43 @@
     max-width: 300px;
     width: 300px;
   }
+}
+
+/* animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.filter__backdrop {
+  animation: fadeInBackdrop 200ms ease-out both;
+}
+
+@keyframes slideOutRight {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes fadeOutBackdrop {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.filter__panel.closing {
+  animation: slideOutRight 200ms ease-in both;
+}
+
+.filter__backdrop.closing {
+  animation: fadeOutBackdrop 160ms ease-in both;
 }
 
 /* Dark and light variants: allow panel classes to control colors */

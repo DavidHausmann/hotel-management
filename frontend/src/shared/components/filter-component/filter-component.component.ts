@@ -14,6 +14,7 @@ export class FilterComponent {
   @Output() applyFiltersEvent = new EventEmitter<void>();
   @Output() clearFiltersEvent = new EventEmitter<void>();
   @Output() closeEvent = new EventEmitter<void>();
+  isClosing = false;
 
   constructor(public themeService: ThemeService) {}
 
@@ -33,9 +34,28 @@ export class FilterComponent {
   clearFilters() {
     this.clearFiltersEvent.emit();
   }
-
   close() {
-    this.closeEvent.emit();
+    // request an animated close
+    this.startClose();
+  }
+
+  startClose() {
+    if (this.isClosing) return;
+    this.isClosing = true;
+    // safety fallback in case animationend isn't fired
+    setTimeout(() => {
+      if (this.isClosing) {
+        this.isClosing = false;
+        this.closeEvent.emit();
+      }
+    }, 320);
+  }
+
+  onAnimationEnd(event: AnimationEvent) {
+    if (this.isClosing) {
+      this.isClosing = false;
+      this.closeEvent.emit();
+    }
   }
 }
 

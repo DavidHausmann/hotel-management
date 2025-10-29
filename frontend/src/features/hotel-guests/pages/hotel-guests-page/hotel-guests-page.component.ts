@@ -34,6 +34,7 @@ export class HotelGuestsPageComponent {
   readonly __hotelGuestsTableRef = HotelGuestsTableComponent;
 
   @ViewChild(HotelGuestsTableComponent) table!: HotelGuestsTableComponent;
+  @ViewChild(FilterComponent) filterComp?: FilterComponent;
 
   // UI state for filter panel
   showFilters = false;
@@ -74,7 +75,8 @@ export class HotelGuestsPageComponent {
       this.table.filterReserved = null;
     }
     this.table.loadPage(0);
-    this.showFilters = false;
+    // request the filter component to animate out; it will emit closeEvent when done
+    this.filterComp?.startClose();
   }
 
   onClearFilters() {
@@ -85,7 +87,8 @@ export class HotelGuestsPageComponent {
   this.filterStatus = '';
     // ask table to clear its filters and reload
     this.table.clearFilters();
-    this.showFilters = false;
+    // animate out the filter panel
+    this.filterComp?.startClose();
   }
 
   onCloseFilters() {
