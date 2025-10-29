@@ -17,9 +17,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class HotelStayService {
+
+    private static final Logger log = LoggerFactory.getLogger(HotelStayService.class);
 
     private static final double DAILY_RATE_WEEKDAY = 120.00; // Seg-Sex
     private static final double DAILY_RATE_WEEKEND = 180.00; // Finais de semana
@@ -60,8 +64,54 @@ public class HotelStayService {
      */
     public Page<HotelStayResponse> search(String name, String document, String phone, LocalDate start,
             LocalDate end, Pageable pageable) {
-        Page<HotelStay> page = stayRepository.findByFilters(name, document, phone, start, end, pageable);
-        return page.map(this::mapToResponse);
+        String n = (name == null || name.isBlank()) ? null : name;
+        String d = (document == null || document.isBlank()) ? null : document;
+        String p = (phone == null || phone.isBlank()) ? null : phone;
+
+        try {
+            Page<HotelStay> page = stayRepository.findByFilters(n, d, p, start, end, pageable);
+            return page.map(this::mapToResponse);
+        } catch (Exception ex) {
+            // Fall back to in-memory filtering when DB schema causes SQL errors (eg. bytea
+            // issues)
+            log.warn("findByFilters failed, falling back to in-memory filtering", ex);
+            List<HotelStay> all = stayRepository.findAll();
+
+            List<HotelStay> filtered = all.stream().filter(s -> {
+                boolean ok = true;
+                // guest fields
+                HotelGuest g = s.getHotelGuest();
+                if (n != null) {
+                    ok = g != null && g.getName() != null && g.getName().toLowerCase().contains(n.toLowerCase());
+                }
+                if (ok && d != null) {
+                    ok = g != null && g.getDocument() != null
+                            && g.getDocument().toLowerCase().contains(d.toLowerCase());
+                }
+                if (ok && p != null) {
+                    ok = g != null && g.getPhone() != null && g.getPhone().toLowerCase().contains(p.toLowerCase());
+                }
+
+                if (ok && start != null) {
+                    ok = s.getPlannedEndDate() != null && !s.getPlannedEndDate().isBefore(start);
+                }
+                if (ok && end != null) {
+                    ok = s.getPlannedStartDate() != null && !s.getPlannedStartDate().isAfter(end);
+                }
+
+                return ok;
+            }).toList();
+
+            int total = filtered.size();
+            int pageNum = pageable.getPageNumber();
+            int size = pageable.getPageSize();
+            int fromIndex = Math.min(pageNum * size, total);
+            int toIndex = Math.min(fromIndex + size, total);
+            List<HotelStay> pageContent = filtered.subList(fromIndex, toIndex);
+            org.springframework.data.domain.Page<HotelStay> res = new org.springframework.data.domain.PageImpl<>(
+                    pageContent, pageable, total);
+            return res.map(this::mapToResponse);
+        }
     }
 
     // --- Métodos de CRUD Básico e Pesquisa ---

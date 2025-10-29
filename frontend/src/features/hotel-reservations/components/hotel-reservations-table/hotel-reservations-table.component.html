@@ -1,0 +1,163 @@
+<div class="hotel__management__table mat-elevation-1">
+  <div class="table-scroll">
+  <table mat-table [dataSource]="(page$ | async)?.items || []" class="mat-mdc-table" role="table">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="plannedStartDate">
+        <th mat-header-cell *matHeaderCellDef>Início planejado</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.plannedStartDate | date : "dd/MM/yyyy" }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="plannedEndDate">
+        <th mat-header-cell *matHeaderCellDef>Fim planejado</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.plannedEndDate | date : "dd/MM/yyyy" }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="checkinTime">
+        <th mat-header-cell *matHeaderCellDef>Check-in</th>
+        <td mat-cell *matCellDef="let element">
+          {{
+            element.checkinTime ? (element.checkinTime | date : "dd/MM/yyyy HH:mm") : "-"
+          }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="checkoutTime">
+        <th mat-header-cell *matHeaderCellDef>Check-out</th>
+        <td mat-cell *matCellDef="let element">
+          {{
+            element.checkoutTime ? (element.checkoutTime | date : "dd/MM/yyyy HH:mm") : "-"
+          }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let element">{{ element.status || "-" }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="numberOfGuests">
+        <th mat-header-cell *matHeaderCellDef>Hóspedes</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.numberOfGuests ?? "-" }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="totalAmount">
+        <th mat-header-cell *matHeaderCellDef>Total</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.totalAmount | number : "1.2-2" }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th
+          class="hotel__management__last__column"
+          mat-header-cell
+          *matHeaderCellDef
+        >
+          Ações
+        </th>
+        <td
+          class="hotel__management__last__column"
+          mat-cell
+          *matCellDef="let element"
+        >
+          <button
+            mat-button
+            class="no-ripple"
+            name="action"
+            [matMenuTriggerFor]="menu"
+          >
+            <div class="hotel__management__table__icon">
+              <img
+                src="assets/icons/options.svg"
+                alt="Menu de ações da reserva"
+              />
+            </div>
+          </button>
+
+          <mat-menu #menu="matMenu">
+            <button
+              mat-menu-item
+              (click)="openCheckout(element)"
+              name="checkout"
+            >
+              Realizar check-out
+            </button>
+            <button
+              mat-menu-item
+              (click)="openDeleteReservation(element)"
+              name="delete-reservation"
+            >
+              Excluir Reserva
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+
+  <div class="table-footer hotel__management__table__footer">
+    <div class="left-controls hotel__management__table__footer__left__controls">
+      <mat-form-field appearance="outline" class="page-size-field">
+        <mat-label>Tamanho</mat-label>
+        <mat-select
+          [value]="pageSize"
+          (selectionChange)="onPageSizeChange($event.value)"
+        >
+          <mat-option [value]="5">5</mat-option>
+          <mat-option [value]="10">10</mat-option>
+          <mat-option [value]="20">20</mat-option>
+          <mat-option [value]="30">30</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="pagination-info hotel__management__table__pagination__info">
+        <ng-container *ngIf="page$ | async as p">
+          <span>Mostrando página {{ p.pagination.pageNumber + 1 }} / {{ p.pagination.totalPages }}</span>
+          <br />
+          <span class="spacer">Total de {{ p.pagination.total }} reservas</span>
+        </ng-container>
+      </div>
+    </div>
+
+    <div
+      class="pagination-controls hotel__management__table__pagination__controls"
+    >
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="prevPage()"
+        [disabled]="(loading$ | async) || !canPrev()"
+      >
+        Anterior
+      </button>
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="nextPage()"
+        [disabled]="(loading$ | async) || !canNext()"
+      >
+        Próxima
+      </button>
+    </div>
+  </div>
+
+  <div class="loading-overlay" *ngIf="loading$ | async">
+    <mat-progress-spinner
+      diameter="48"
+      mode="indeterminate"
+    ></mat-progress-spinner>
+  </div>
+</div>
