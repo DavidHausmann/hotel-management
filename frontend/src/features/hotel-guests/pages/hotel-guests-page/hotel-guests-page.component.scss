@@ -41,6 +41,13 @@
 .hotel__guests__list {
     margin-top: 32px;
 }
+.hotel__guests__filters {
+  .filter__field {
+    mat-form-field {
+      width: 100%;
+    }
+  }
+}
 
 @media only screen and (min-width: 1025px) {
   .hotel__guests__actions {

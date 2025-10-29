@@ -1,1 +1,33 @@
-<p>filter-component works!</p>
+<!-- Overlay with backdrop -->
+<div class="filter__overlay">
+  <div class="filter__backdrop" (click)="close()"></div>
+
+  <!-- Panel: clicking inside should not propagate to backdrop -->
+  <div
+    class="filter__panel"
+    [ngClass]="isDarkMode() ? 'panel--dark' : 'panel--light'"
+    (click)="onClick($event)"
+  >
+    <div class="card">
+      <div class="filters__area">
+        <div class="filters__content">
+          <div class="title">
+            <p class="large-regular" [ngClass]="isDarkMode() ? 'text__color__white' : 'text__color__dark'">
+              Filtros avançados
+            </p>
+          </div>
+          <div class="filters__fields">
+            <ng-content></ng-content>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button mat-flat-button color="primary" class="filter__button" (click)="applyFilters()">
+            <img src="assets/icons/filter.svg" alt="Filtrar" />Filtrar
+          </button>
+          <button mat-button (click)="clearFilters()">Limpar filtros</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

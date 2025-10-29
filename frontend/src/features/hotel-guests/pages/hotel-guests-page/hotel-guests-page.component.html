@@ -13,7 +13,7 @@
       />
       Adicionar Hóspede
     </button>
-    <button class="hotel__guests__actions__button">
+    <button class="hotel__guests__actions__button" (click)="toggleFilters()">
       <img
         src="assets/icons/filter.svg"
         alt="Filtrar hóspedes"
@@ -22,6 +22,42 @@
       Filtrar Hóspedes
     </button>
   </div>
+</section>
+<section *ngIf="showFilters" class="hotel__guests__filters">
+  <app-filter-component
+    (applyFiltersEvent)="onApplyFilters()"
+    (clearFiltersEvent)="onClearFilters()"
+    (closeEvent)="onCloseFilters()"
+  >
+    <div class="filter__field">
+      <mat-form-field appearance="outline">
+        <mat-label>Nome</mat-label>
+        <input matInput [(ngModel)]="filterName" />
+      </mat-form-field>
+    </div>
+    <div class="filter__field">
+      <mat-form-field appearance="outline">
+        <mat-label>Documento</mat-label>
+        <input matInput [(ngModel)]="filterDocument" />
+      </mat-form-field>
+    </div>
+    <div class="filter__field">
+      <mat-form-field appearance="outline">
+        <mat-label>Telefone</mat-label>
+        <input matInput [(ngModel)]="filterPhone" />
+      </mat-form-field>
+    </div>
+    <div class="filter__field">
+      <mat-form-field appearance="outline">
+        <mat-label>Status da reserva</mat-label>
+        <mat-select [(ngModel)]="filterStatus">
+          <mat-option [value]="''">Selecionar status</mat-option>
+          <mat-option [value]="'CHECKED_IN'">Hóspede hospedado</mat-option>
+          <mat-option [value]="'RESERVED'">Reserva pendente</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </app-filter-component>
 </section>
 <section class="hotel__guests__list">
   <app-hotel-guests-table></app-hotel-guests-table>
