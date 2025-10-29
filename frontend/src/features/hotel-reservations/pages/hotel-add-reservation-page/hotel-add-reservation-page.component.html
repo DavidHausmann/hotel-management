@@ -1,0 +1,42 @@
+<section class="hotel__add_reservation__page">
+	<app-breadcrumbs
+		[previousPageText]="'Hóspedes'"
+		[currentPageText]="'Adicionar Reserva'"
+		(backFunction)="goBack()"
+	></app-breadcrumbs>
+
+	<form [formGroup]="form" (ngSubmit)="onSubmit()" class="reservation__form">
+		<h2>Agendar Reserva</h2>
+
+		<mat-form-field appearance="fill" class="full__width">
+			<mat-label>Data início (planejado)</mat-label>
+			<input matInput [matDatepicker]="startPicker" formControlName="plannedStartDate" [matDatepickerFilter]="startDateFilterFn" />
+			<mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+			<mat-datepicker #startPicker></mat-datepicker>
+			<mat-error *ngIf="form.get('plannedStartDate')?.hasError('required')">Data início é obrigatória</mat-error>
+		</mat-form-field>
+
+		<mat-form-field appearance="fill" class="full__width">
+			<mat-label>Data fim (planejado)</mat-label>
+			<input matInput [matDatepicker]="endPicker" formControlName="plannedEndDate" [matDatepickerFilter]="endDateFilterFn" />
+			<mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+			<mat-datepicker #endPicker></mat-datepicker>
+				<mat-error *ngIf="form.get('plannedEndDate')?.hasError('required')">Data fim é obrigatória</mat-error>
+						<mat-error *ngIf="form.hasError('dateRange')">Data fim deve ser no mínimo um dia após a data início</mat-error>
+		</mat-form-field>
+
+		<mat-form-field appearance="fill" class="full__width">
+			<mat-label>Número de hóspedes</mat-label>
+			<input matInput type="number" formControlName="numberOfGuests" min="1" />
+			<mat-error *ngIf="form.get('numberOfGuests')?.hasError('required')">Número de hóspedes é obrigatório</mat-error>
+		</mat-form-field>
+
+		<div class="actions">
+			<button class="actions__previous" mat-button type="button" (click)="goBack()">Voltar</button>
+			<button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || submitting">
+				<span *ngIf="!submitting">Agendar Reserva</span>
+				<mat-progress-spinner *ngIf="submitting" diameter="20" mode="indeterminate"></mat-progress-spinner>
+			</button>
+		</div>
+	</form>
+</section>

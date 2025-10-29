@@ -205,3 +205,54 @@ body {
 .mat-mdc-button:not(:disabled) {
   color: var(--hotel-management-secondary) !important;
 }
+
+.hotel__management__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 32px;
+  app-breadcrumbs {
+    display: none;
+  }
+  .hotel__management__actions__buttons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    .hotel__management__actions__button {
+      height: 52px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background-color: var(--hotel-management-primary);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: none;
+      &:hover {
+        background-color: var(--hotel-management-secondary);
+      }
+      &:active {
+        transform: scale(0.98);
+        background-color: var(--hotel-management-secondary);
+      }
+      .hotel__management__actions__button__icon {
+        height: 24px;
+        width: 24px;
+        display: block;
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 1025px) {
+  .hotel__management__actions {
+    justify-content: space-between;
+    app-breadcrumbs {
+      display: block;
+    }
+  }
+}
+

@@ -25,7 +25,7 @@ export class HotelReservationsPageService {
   private loading$ = new BehaviorSubject<boolean>(false);
 
   fetchReservationsPage(
-    options: { guestName?: string } = {},
+    options: { name?: string; document?: string; phone?: string; startDate?: string; endDate?: string } = {},
     page = 0,
     size = 20
   ): Observable<{

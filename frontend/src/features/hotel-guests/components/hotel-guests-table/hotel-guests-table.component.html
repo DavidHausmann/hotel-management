@@ -63,6 +63,13 @@
           <mat-menu #menu="matMenu">
             <button
               mat-menu-item
+              (click)="openScheduleReservation(element)"
+              name="schedule-reservation"
+            >
+              Agendar reserva
+            </button>
+            <button
+              mat-menu-item
               (click)="openEditGuest(element)"
               name="edit-guest"
             >

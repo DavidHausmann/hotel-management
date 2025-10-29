@@ -1,23 +1,23 @@
-<section class="hotel__guests__actions">
+<section class="hotel__management__actions">
   <app-breadcrumbs
     [previousPageText]="'Home'"
     [currentPageText]="'Hóspedes'"
     (backFunction)="goToHome()"
   ></app-breadcrumbs>
-  <div class="hotel__guests__actions__buttons">
-    <button class="hotel__guests__actions__button" (click)="goToAddGuest()">
+  <div class="hotel__management__actions__buttons">
+    <button class="hotel__management__actions__button" (click)="goToAddGuest()">
       <img
         src="assets/icons/add-user.svg"
         alt="Adicionar novo hóspede"
-        class="hotel__guests__actions__button__icon"
+        class="hotel__management__actions__button__icon"
       />
       Adicionar Hóspede
     </button>
-    <button class="hotel__guests__actions__button" (click)="toggleFilters()">
+    <button class="hotel__management__actions__button" (click)="toggleFilters()">
       <img
         src="assets/icons/filter.svg"
         alt="Filtrar hóspedes"
-        class="hotel__guests__actions__button__icon"
+        class="hotel__management__actions__button__icon"
       />
       Filtrar Hóspedes
     </button>

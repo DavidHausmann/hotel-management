@@ -1,6 +1,11 @@
 <div class="hotel__management__table mat-elevation-1">
   <div class="table-scroll">
-  <table mat-table [dataSource]="(page$ | async)?.items || []" class="mat-mdc-table" role="table">
+    <table
+      mat-table
+      [dataSource]="(page$ | async)?.items || []"
+      class="mat-mdc-table"
+      role="table"
+    >
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>ID</th>
         <td mat-cell *matCellDef="let element">{{ element.id }}</td>
@@ -24,7 +29,9 @@
         <th mat-header-cell *matHeaderCellDef>Check-in</th>
         <td mat-cell *matCellDef="let element">
           {{
-            element.checkinTime ? (element.checkinTime | date : "dd/MM/yyyy HH:mm") : "-"
+            element.checkinTime
+              ? (element.checkinTime | date : "dd/MM/yyyy HH:mm")
+              : "-"
           }}
         </td>
       </ng-container>
@@ -33,14 +40,16 @@
         <th mat-header-cell *matHeaderCellDef>Check-out</th>
         <td mat-cell *matCellDef="let element">
           {{
-            element.checkoutTime ? (element.checkoutTime | date : "dd/MM/yyyy HH:mm") : "-"
+            element.checkoutTime
+              ? (element.checkoutTime | date : "dd/MM/yyyy HH:mm")
+              : "-"
           }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let element">{{ element.status || "-" }}</td>
+        <td mat-cell *matCellDef="let element">{{ translateStatus(element.status) || "-" }}</td>
       </ng-container>
 
       <ng-container matColumnDef="numberOfGuests">
@@ -53,7 +62,9 @@
       <ng-container matColumnDef="totalAmount">
         <th mat-header-cell *matHeaderCellDef>Total</th>
         <td mat-cell *matCellDef="let element">
-          {{ element.totalAmount | number : "1.2-2" }}
+          {{
+            element.totalAmount ? (element.totalAmount | number : "1.2-2") : "-"
+          }}
         </td>
       </ng-container>
 
@@ -86,6 +97,7 @@
 
           <mat-menu #menu="matMenu">
             <button
+              *ngIf="element.status === 'CHECKED_IN'"
               mat-menu-item
               (click)="openCheckout(element)"
               name="checkout"
@@ -93,6 +105,15 @@
               Realizar check-out
             </button>
             <button
+              *ngIf="element.status === 'RESERVED'"
+              mat-menu-item
+              (click)="openCheckout(element)"
+              name="checkout"
+            >
+              Realizar check-in
+            </button>
+            <button
+              *ngIf="element.status === 'RESERVED'"
               mat-menu-item
               (click)="openDeleteReservation(element)"
               name="delete-reservation"
@@ -125,7 +146,10 @@
 
       <div class="pagination-info hotel__management__table__pagination__info">
         <ng-container *ngIf="page$ | async as p">
-          <span>Mostrando página {{ p.pagination.pageNumber + 1 }} / {{ p.pagination.totalPages }}</span>
+          <span
+            >Mostrando página {{ p.pagination.pageNumber + 1 }} /
+            {{ p.pagination.totalPages }}</span
+          >
           <br />
           <span class="spacer">Total de {{ p.pagination.total }} reservas</span>
         </ng-container>

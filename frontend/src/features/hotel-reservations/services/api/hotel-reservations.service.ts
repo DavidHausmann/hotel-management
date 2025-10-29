@@ -4,13 +4,13 @@ import { Observable } from 'rxjs';
 
 export interface ReservationResponse {
   id: number;
-  checkinTime?: string; // ISO datetime
-  checkoutTime?: string; // ISO datetime
-  status?: string; // e.g. CHECKED_IN, RESERVED
+  checkinTime?: string;
+  checkoutTime?: string;
+  status?: 'CHECKED_IN' | 'CHECKED_OUT' | 'RESERVED';
   totalAmount?: number;
   hotelGuestId?: number;
-  plannedStartDate?: string; // ISO date
-  plannedEndDate?: string; // ISO date
+  plannedStartDate?: string;
+  plannedEndDate?: string;
   numberOfGuests?: number;
 }
 
@@ -30,7 +30,7 @@ export class HotelReservationsService {
   constructor(private http: HttpClient) {}
 
   searchReservations(
-    params: { guestName?: string } = {},
+    params: { name?: string; document?: string; phone?: string; startDate?: string; endDate?: string } = {},
     page = 0,
     size = 20
   ): Observable<Page<ReservationResponse>> {
@@ -38,8 +38,20 @@ export class HotelReservationsService {
     const finalSize = Math.min(size, maxPageSize);
 
     let httpParams = new HttpParams().set('page', String(page)).set('size', String(finalSize));
-    if (params.guestName) {
-      httpParams = httpParams.set('guestName', params.guestName);
+    if (params.name) {
+      httpParams = httpParams.set('name', params.name);
+    }
+    if (params.document) {
+      httpParams = httpParams.set('document', params.document);
+    }
+    if (params.phone) {
+      httpParams = httpParams.set('phone', params.phone);
+    }
+    if (params.startDate) {
+      httpParams = httpParams.set('startDate', params.startDate);
+    }
+    if (params.endDate) {
+      httpParams = httpParams.set('endDate', params.endDate);
     }
 
     return this.http.get<Page<ReservationResponse>>(`${this.API}api/stay/search`, { params: httpParams });
@@ -47,5 +59,9 @@ export class HotelReservationsService {
 
   deleteReservation(id: number) {
     return this.http.delete<void>(`${this.API}api/stay/${id}`);
+  }
+
+  createReservation(hotelGuestId: number, body: { plannedStartDate: string; plannedEndDate: string; numberOfGuests: number }) {
+    return this.http.post<ReservationResponse>(`${this.API}api/stay/reserve/${hotelGuestId}`, body);
   }
 }

@@ -68,6 +68,11 @@ export class HotelGuestsTableComponent {
     private router: Router
   ) {}
 
+  openScheduleReservation(element: any) {
+    // navigate to reservation creation page with guest id
+    this.router.navigate(['/reservas/adicionar', element.id]);
+  }
+
   openEditGuest(element: any) {
     // navigate to the add/edit page with the guest id so the page loads in edit mode
     // pass the guest object in navigation state so the add/edit page can prefill without an HTTP request

@@ -46,6 +46,12 @@ export class HotelReservationsTableComponent implements OnInit {
 
   // simple reactive state mirroring guests table
   pageSize = 10;
+  // filter state
+  filterName: string | undefined;
+  filterDocument: string | undefined;
+  filterPhone: string | undefined;
+  filterStartDate: string | undefined; // YYYY-MM-DD
+  filterEndDate: string | undefined; // YYYY-MM-DD
 
   get page$() {
     return this.pageService.getCachedReservationsPage();
@@ -90,7 +96,10 @@ export class HotelReservationsTableComponent implements OnInit {
   }
 
   onPageSizeChange(value: number) {
-    this.pageSize = Math.min(value, 30);
+    const newSize = Math.min(value, 30);
+    if (newSize === this.pageSize) return;
+    this.pageSize = newSize;
+    this.loadPage(0);
   }
 
   prevPage() {
@@ -106,7 +115,13 @@ export class HotelReservationsTableComponent implements OnInit {
   }
 
   loadPage(pageNumber: number) {
-    const options: { guestName?: string } = {};
+    const options: { name?: string; document?: string; phone?: string; startDate?: string; endDate?: string } = {};
+    if (this.filterName) options.name = this.filterName;
+    if (this.filterDocument) options.document = this.filterDocument;
+    if (this.filterPhone) options.phone = this.filterPhone;
+    if (this.filterStartDate) options.startDate = this.filterStartDate;
+    if (this.filterEndDate) options.endDate = this.filterEndDate;
+
     this.pageService.fetchReservationsPage(options, pageNumber, this.pageSize).subscribe({
       error: () => {},
     });
@@ -121,5 +136,18 @@ export class HotelReservationsTableComponent implements OnInit {
     const snap = this.pageService.getLastCachedSnapshot();
     if (!snap) return false;
     return snap.pagination.pageNumber + 1 < snap.pagination.totalPages;
+  }
+
+  translateStatus(status: string | undefined): string { 
+    switch (status) {
+      case 'CHECKED_IN':
+        return 'Check-in realizado';
+      case 'CHECKED_OUT':
+        return 'Check-out realizado';
+      case 'RESERVED':
+        return 'Reservado';
+      default:
+        return 'Desconhecido';
+    }
   }
 }

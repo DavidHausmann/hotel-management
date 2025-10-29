@@ -35,4 +35,11 @@ export const routes: Routes = [
         '../features/hotel-reservations/pages/hotel-reservations-page/hotel-reservations-page.component'
       ).then((m) => m.HotelReservationsPageComponent),
   },
+  {
+    path: 'reservas/adicionar/:hotelGuestId',
+    loadComponent: () =>
+      import(
+        '../features/hotel-reservations/pages/hotel-add-reservation-page/hotel-add-reservation-page.component'
+      ).then((m) => m.HotelAddReservationPageComponent),
+  },
 ];

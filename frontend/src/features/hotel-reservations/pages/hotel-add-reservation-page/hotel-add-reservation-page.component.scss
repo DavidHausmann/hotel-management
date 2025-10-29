@@ -1,0 +1,43 @@
+/* Simple spacing consistent with the Add Guest page */
+.hotel__add_reservation__page {
+  .reservation__form {
+    max-width: 620px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .full__width {
+    width: 100%;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 8px;
+    gap: 8px;
+    .actions__previous {
+      display: block;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  app-breadcrumbs {
+    display: none;
+  }
+}
+
+@media only screen and (min-width: 1025px) {
+  .hotel__add_reservation__page {
+    app-breadcrumbs {
+      display: block;
+    }
+    .actions {
+      .actions__previous {
+        display: none;
+      }
+    }
+  }
+}

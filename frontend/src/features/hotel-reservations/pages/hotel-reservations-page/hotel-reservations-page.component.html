@@ -1,7 +1,63 @@
-<app-breadcrumbs
-  [previousPageText]="'Home'"
-  [currentPageText]="'Reservas'"
-  (backFunction)="goToHome()"
-></app-breadcrumbs>
- 
-<app-hotel-reservations-table></app-hotel-reservations-table>
+<section class="hotel__management__actions">
+  <app-breadcrumbs
+    [previousPageText]="'Home'"
+    [currentPageText]="'Hóspedes'"
+    (backFunction)="goToHome()"
+  ></app-breadcrumbs>
+  <div class="hotel__management__actions__buttons">
+    <button class="hotel__management__actions__button" (click)="toggleFilters()">
+      <img
+        src="assets/icons/filter.svg"
+        alt="Filtrar reservas"
+        class="hotel__management__actions__button__icon"
+      />
+      Filtrar Reservas
+    </button>
+  </div>
+</section>
+<section *ngIf="showFilters" class="hotel__reservations__filters">
+  <app-filter-component
+    (applyFiltersEvent)="onApplyFilters()"
+    (clearFiltersEvent)="onClearFilters()"
+    (closeEvent)="onCloseFilters()"
+  >
+    <div class="filter__field">
+      <mat-form-field appearance="outline">
+        <mat-label>Nome</mat-label>
+        <input matInput [(ngModel)]="filterName" />
+      </mat-form-field>
+    </div>
+    <div class="filter__field">
+      <mat-form-field appearance="outline">
+        <mat-label>Documento</mat-label>
+        <input matInput [(ngModel)]="filterDocument" />
+      </mat-form-field>
+    </div>
+    <div class="filter__field">
+      <mat-form-field appearance="outline">
+        <mat-label>Telefone</mat-label>
+        <input matInput [(ngModel)]="filterPhone" />
+      </mat-form-field>
+    </div>
+    <div class="filter__field">
+      <mat-form-field appearance="outline">
+        <mat-label>Data início (planejado)</mat-label>
+        <input matInput [matDatepicker]="startPicker" [(ngModel)]="filterStartDate" />
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="filter__field">
+      <mat-form-field appearance="outline">
+        <mat-label>Data fim (planejado)</mat-label>
+        <input matInput [matDatepicker]="endPicker" [(ngModel)]="filterEndDate" />
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </app-filter-component>
+</section>
+
+<section class="hotel__reservations__list">
+  <app-hotel-reservations-table></app-hotel-reservations-table>
+</section>
