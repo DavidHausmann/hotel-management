@@ -73,17 +73,17 @@ public class HotelGuestService {
         String d = (document == null || document.isBlank()) ? null : document;
         String p = (phone == null || phone.isBlank()) ? null : phone;
 
-        // Normalize the boolean parameters: treat null as 'no filter'
+        
         Boolean inHotelFilter = inHotel;
         Boolean reservedFilter = reserved;
 
         try {
             return hotelGuestRepository.findByFilters(n, d, p, inHotelFilter, reservedFilter, pageable);
         } catch (Exception error) {
-            // Fall back to in-memory filtering when the DB schema causes SQL errors
+            
             log.warn("findByFilters failed, falling back to in-memory filtering", error);
             List<HotelGuest> all = hotelGuestRepository.findAll();
-            // Preload stays to support in-memory evaluation of the new filters
+            
             List<com.hotel.management.model.HotelStay> allStays = hotelStayRepository.findAll();
             java.util.Map<Long, List<com.hotel.management.model.HotelStay>> staysByGuest = allStays.stream()
                     .filter(s -> s.getHotelGuest() != null && s.getHotelGuest().getId() != null)
@@ -126,11 +126,11 @@ public class HotelGuestService {
 
     @Transactional
     public void deleteById(Long id) {
-        // Ensure guest exists
+        
         hotelGuestRepository.findById(id).orElseThrow(
                 () -> new com.hotel.management.exception.ResourceNotFoundException("Hóspede não encontrado: " + id));
 
-        // Rule 1: cannot delete a guest who is currently checked in
+        
         long checkedInCount = hotelStayRepository.countByHotelGuest_IdAndStatus(id,
                 com.hotel.management.model.HotelStayStatus.CHECKED_IN);
         if (checkedInCount > 0) {
@@ -138,7 +138,7 @@ public class HotelGuestService {
                     "Não é possível excluir hóspede que está hospedado no hotel.");
         }
 
-        // Rule 2: delete any RESERVED stays for this guest before deleting the guest
+        
         java.util.List<com.hotel.management.model.HotelStay> reserved = hotelStayRepository
                 .findByHotelGuest_IdAndStatus(id, com.hotel.management.model.HotelStayStatus.RESERVED);
         if (!reserved.isEmpty()) {

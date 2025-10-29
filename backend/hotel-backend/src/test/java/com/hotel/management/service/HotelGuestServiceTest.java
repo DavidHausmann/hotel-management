@@ -45,7 +45,7 @@ public class HotelGuestServiceTest {
 
         HotelGuestPatchRequest req = new HotelGuestPatchRequest();
         req.setName("New Name");
-        // leave other fields null
+        
 
         HotelGuest result = service.patch(1L, req);
 
@@ -95,10 +95,10 @@ public class HotelGuestServiceTest {
         when(stayRepository.findByHotelGuest_IdAndStatus(7L, com.hotel.management.model.HotelStayStatus.RESERVED))
                 .thenReturn(java.util.List.of(stay));
 
-        // perform delete
+        
         service.deleteById(7L);
 
-        // verify reserved stays deleted and guest deleted
+        
         org.mockito.Mockito.verify(stayRepository).deleteAll(org.mockito.ArgumentMatchers.eq(java.util.List.of(stay)));
         org.mockito.Mockito.verify(repository).deleteById(7L);
     }

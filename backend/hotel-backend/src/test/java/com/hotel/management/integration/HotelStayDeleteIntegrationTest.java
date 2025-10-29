@@ -84,7 +84,7 @@ public class HotelStayDeleteIntegrationTest {
 
     @Test
     void delete_reservation_returns_not_found_when_missing() throws Exception {
-        // choose an id that does not exist
+        
         mockMvc.perform(delete("/api/stay/999999").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }

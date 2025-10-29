@@ -42,8 +42,8 @@ public interface HotelStayRepository extends JpaRepository<HotelStay, Long> {
             @Param("end") LocalDate end,
             Pageable pageable);
 
-    // Helpers to find stays by guest id and status (used by guest deletion business
-    // rules)
+    
+    
     List<HotelStay> findByHotelGuest_IdAndStatus(Long hotelGuestId, HotelStayStatus status);
 
     long countByHotelGuest_IdAndStatus(Long hotelGuestId, HotelStayStatus status);

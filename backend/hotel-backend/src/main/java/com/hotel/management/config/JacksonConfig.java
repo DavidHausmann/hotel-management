@@ -7,13 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.data.domain.PageImpl;
 
-/**
- * Configure Jackson so that Spring Data's PageImpl can be serialized safely by
- * ignoring internal properties that are not serializable in some environments
- * (for example: pageable, sort). Tests previously added a test-only mixin;
- * this registers the mixin globally so controllers returning Page<T> work at
- * runtime and do not trigger HttpMessageNotWritableException.
- */
+
 @Configuration
 public class JacksonConfig {
 

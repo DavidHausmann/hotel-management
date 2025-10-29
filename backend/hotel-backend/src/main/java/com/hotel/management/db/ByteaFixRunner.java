@@ -13,11 +13,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Runs an idempotent SQL script to convert possible bytea columns to text when
- * the property `app.applyByteaFix=true` is set. This allows applying the
- * non-destructive migration without external tools.
- */
+
 @Component
 @Order(1)
 public class ByteaFixRunner implements CommandLineRunner {
@@ -34,7 +30,7 @@ public class ByteaFixRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         boolean apply = Boolean.parseBoolean(env.getProperty("app.applyByteaFix", "false"));
-        // also accept environment variable APPLY_BYTEA_FIX=true for convenience
+        
         if (!apply) {
             String envFlag = System.getenv("APPLY_BYTEA_FIX");
             apply = "true".equalsIgnoreCase(envFlag) || "1".equals(envFlag);
@@ -51,7 +47,7 @@ public class ByteaFixRunner implements CommandLineRunner {
         }
 
         try (Connection conn = dataSource.getConnection()) {
-            // Log current column types for visibility
+            
             try (var ps = conn.prepareStatement(
                     "SELECT table_schema, column_name, data_type FROM information_schema.columns WHERE table_name = 'hotel_guest' AND column_name IN ('name','document','phone') ORDER BY table_schema");
                     var rs = ps.executeQuery()) {
@@ -69,7 +65,7 @@ public class ByteaFixRunner implements CommandLineRunner {
                 st.execute(sql);
             }
 
-            // Log column types after attempting conversion
+            
             try (var ps2 = conn.prepareStatement(
                     "SELECT table_schema, column_name, data_type FROM information_schema.columns WHERE table_name = 'hotel_guest' AND column_name IN ('name','document','phone') ORDER BY table_schema");
                     var rs2 = ps2.executeQuery()) {
@@ -84,7 +80,7 @@ public class ByteaFixRunner implements CommandLineRunner {
             }
 
             log.info("Bytea->text migration script executed (if any conversion was needed).");
-            // quick runtime test: try selecting lower(name) to see if DB still complains
+            
             try (var ps3 = conn.prepareStatement("SELECT lower(name) FROM hotel_guest LIMIT 1");
                     var rs3 = ps3.executeQuery()) {
                 if (rs3.next()) {

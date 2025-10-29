@@ -74,7 +74,7 @@ public class HotelGuestController {
                         @RequestParam(required = false) Boolean inHotel,
                         @RequestParam(required = false) Boolean reserved,
                         @PageableDefault(size = 20) Pageable pageable) {
-                // Enforce a maximum page size to avoid very large responses
+                
                 int maxSize = 30;
                 if (pageable.getPageSize() > maxSize) {
                         pageable = PageRequest.of(pageable.getPageNumber(), maxSize, pageable.getSort());

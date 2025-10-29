@@ -32,7 +32,7 @@ public class HotelGuestControllerTest {
     void setup() {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        // Avoid serializing PageImpl internals (pageable/sort) which can throw in tests
+        
         objectMapper.addMixIn(org.springframework.data.domain.PageImpl.class, PageImplMixin.class);
 
         HotelGuestController controller = new HotelGuestController(guestService);
@@ -72,8 +72,8 @@ public class HotelGuestControllerTest {
 
     @Test
     void save_invalidPayload_returnsValidationErrorWithDetailsArray() throws Exception {
-        // Missing required fields (name, document, phone)
-        // send an empty JSON object to trigger validation on the create DTO
+        
+        
         mockMvc.perform(post("/api/guest")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))

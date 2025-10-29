@@ -20,11 +20,11 @@ public class GlobalExceptionHandlerTest {
     void handleValidationExceptions_should_return_structured_error_details() throws NoSuchMethodException {
         GlobalExceptionHandler handler = new GlobalExceptionHandler();
 
-        // Build a BindingResult with one field error
+        
         BeanPropertyBindingResult binding = new BeanPropertyBindingResult(new Object(), "hotelGuest");
         binding.addError(new FieldError("hotelGuest", "name", "must not be blank"));
 
-        // Obtain MethodParameter from controller 'save' method (first parameter)
+        
         Method method = HotelGuestController.class.getMethod("save",
                 com.hotel.management.dto.HotelGuestCreateRequest.class);
         MethodParameter param = new MethodParameter(method, 0);

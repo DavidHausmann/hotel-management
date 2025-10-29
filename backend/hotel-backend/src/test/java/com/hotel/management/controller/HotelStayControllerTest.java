@@ -29,18 +29,18 @@ public class HotelStayControllerTest {
 
         private MockMvc mockMvc;
 
-        // ObjectMapper configured for Java time types in standalone MockMvc
+        
         private com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
         private void configureObjectMapper() {
                 objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
                 objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-                // Prevent Jackson from trying to serialize internal Pageable/Sort from PageImpl
+                
                 objectMapper.addMixIn(org.springframework.data.domain.PageImpl.class, PageImplMixin.class);
         }
 
-        // Mixin to ignore pageable/sort properties which can throw
-        // UnsupportedOperationException
+        
+        
         @com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "pageable", "sort" })
         private static abstract class PageImplMixin {
         }
@@ -58,8 +58,8 @@ public class HotelStayControllerTest {
                 org.springframework.http.converter.json.MappingJackson2HttpMessageConverter converter = new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(
                                 objectMapper);
 
-                // Register GlobalExceptionHandler so exception mapping is active in standalone
-                // setup
+                
+                
                 mockMvc = MockMvcBuilders.standaloneSetup(controller)
                                 .setControllerAdvice(new com.hotel.management.exception.GlobalExceptionHandler())
                                 .setMessageConverters(converter)
@@ -152,7 +152,7 @@ public class HotelStayControllerTest {
 
         @Test
         void deleteReservation_returns_no_content_when_reserved() throws Exception {
-                // service does nothing (void) when deletion is successful
+                
                 org.mockito.Mockito.doNothing().when(hotelStayService).deleteReservationIfReserved(100L);
 
                 mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders

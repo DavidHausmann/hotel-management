@@ -46,7 +46,7 @@ public class HotelGuestIntegrationTest {
 
     @Test
     void deletingGuest_withReservedStay_removesReservedAndDeletesGuest() {
-        // create guest
+        
         Map<String, Object> guest = new HashMap<>();
         guest.put("name", "Integration Reserved");
         guest.put("document", "111.111.111-11");
@@ -59,7 +59,7 @@ public class HotelGuestIntegrationTest {
         Number guestId = (Number) created.getBody().get("id");
         assertThat(guestId).isNotNull();
 
-        // create reservation (RESERVED)
+        
         Map<String, Object> stay = new HashMap<>();
         stay.put("plannedStartDate", LocalDate.now().plusDays(1).toString());
         stay.put("plannedEndDate", LocalDate.now().plusDays(3).toString());
@@ -72,14 +72,14 @@ public class HotelGuestIntegrationTest {
         Number stayId = (Number) stayCreated.getBody().get("id");
         assertThat(stayId).isNotNull();
 
-        // delete guest - should remove reserved stay then guest
+        
         ResponseEntity<Void> deleteResp = restTemplate.exchange(url("/api/guest/" + guestId.longValue()),
                 HttpMethod.DELETE, null, Void.class);
         assertThat(deleteResp.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
-        // verify guest gone
+        
         assertThat(guestRepository.findById(guestId.longValue())).isEmpty();
-        // verify stays for guest gone (both RESERVED and CHECKED_IN should be empty)
+        
         assertThat(stayRepository.findByHotelGuest_IdAndStatus(guestId.longValue(),
                 com.hotel.management.model.HotelStayStatus.RESERVED)).isEmpty();
         assertThat(stayRepository.findByHotelGuest_IdAndStatus(guestId.longValue(),
@@ -88,7 +88,7 @@ public class HotelGuestIntegrationTest {
 
     @Test
     void deletingGuest_withCheckedInStay_isRejectedWith409() {
-        // create guest
+        
         Map<String, Object> guest = new HashMap<>();
         guest.put("name", "Integration CheckedIn");
         guest.put("document", "222.222.222-22");
@@ -101,7 +101,7 @@ public class HotelGuestIntegrationTest {
         Number guestId = (Number) created.getBody().get("id");
         assertThat(guestId).isNotNull();
 
-        // create reservation (RESERVED)
+        
         Map<String, Object> stay = new HashMap<>();
         stay.put("plannedStartDate", LocalDate.now().toString());
         stay.put("plannedEndDate", LocalDate.now().plusDays(1).toString());
@@ -114,7 +114,7 @@ public class HotelGuestIntegrationTest {
         Number stayId = (Number) stayCreated.getBody().get("id");
         assertThat(stayId).isNotNull();
 
-        // perform check-in -> PATCH /api/stay/{stayId}/checkin
+        
         Map<String, Object> checkin = new HashMap<>();
         checkin.put("checkinTime", LocalDateTime.now().plusHours(1).toString());
 
@@ -128,7 +128,7 @@ public class HotelGuestIntegrationTest {
                 });
         assertThat(checkinResp.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        // attempt delete guest - expect 409
+        
         ResponseEntity<Map<String, Object>> deleteResp = restTemplate.exchange(url("/api/guest/" + guestId.longValue()),
                 HttpMethod.DELETE, null, new ParameterizedTypeReference<Map<String, Object>>() {
                 });

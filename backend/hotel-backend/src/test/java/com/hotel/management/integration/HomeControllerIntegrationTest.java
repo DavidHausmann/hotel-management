@@ -39,7 +39,7 @@ public class HomeControllerIntegrationTest {
         stayRepository.deleteAll();
         guestRepository.deleteAll();
 
-        // Guest 1 has car
+        
         HotelGuest g1 = new HotelGuest();
         g1.setName("Alice");
         g1.setDocument("111.111.111-11");
@@ -47,7 +47,7 @@ public class HomeControllerIntegrationTest {
         g1.setHasCar(true);
         guestRepository.save(g1);
 
-        // Guest 2 no car
+        
         HotelGuest g2 = new HotelGuest();
         g2.setName("Bob");
         g2.setDocument("222.222.222-22");
@@ -58,7 +58,7 @@ public class HomeControllerIntegrationTest {
         LocalDate today = LocalDate.now();
         LocalDate monthStart = today.withDayOfMonth(1);
 
-        // Reservation overlapping current month
+        
         HotelStay r1 = new HotelStay();
         r1.setHotelGuest(g2);
         r1.setStatus(HotelStayStatus.RESERVED);
@@ -66,7 +66,7 @@ public class HomeControllerIntegrationTest {
         r1.setPlannedEndDate(monthStart.plusDays(2));
         stayRepository.save(r1);
 
-        // Active checkin 1 (guest with car)
+        
         HotelStay s1 = new HotelStay();
         s1.setHotelGuest(g1);
         s1.setStatus(HotelStayStatus.CHECKED_IN);
@@ -74,7 +74,7 @@ public class HomeControllerIntegrationTest {
         s1.setNumberOfGuests(2);
         stayRepository.save(s1);
 
-        // Active checkin 2 (guest without car)
+        
         HotelStay s2 = new HotelStay();
         s2.setHotelGuest(g2);
         s2.setStatus(HotelStayStatus.CHECKED_IN);

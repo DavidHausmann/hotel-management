@@ -18,8 +18,8 @@ public interface HotelGuestRepository extends JpaRepository<HotelGuest, Long> {
 
     List<HotelGuest> findByPhoneContainingIgnoreCase(String phone);
 
-    // Revert to a JPQL query that uses LOWER on the entity attributes.
-    // We use a separate countQuery to support pagination reliably.
+    
+    
     @Query(value = "SELECT h FROM HotelGuest h WHERE "
             + "(:name IS NULL OR LOWER(h.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND "
             + "(:document IS NULL OR LOWER(h.document) LIKE LOWER(CONCAT('%', :document, '%'))) AND "

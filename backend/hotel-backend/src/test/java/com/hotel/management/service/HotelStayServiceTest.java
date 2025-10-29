@@ -42,27 +42,27 @@ public class HotelStayServiceTest {
 
     @Test
     void calculateStayCost_weekday_no_car() {
-        LocalDateTime checkin = LocalDateTime.of(2025, 10, 20, 15, 0); // Monday
-        LocalDateTime checkout = LocalDateTime.of(2025, 10, 21, 10, 0); // next day before 12
+        LocalDateTime checkin = LocalDateTime.of(2025, 10, 20, 15, 0); 
+        LocalDateTime checkout = LocalDateTime.of(2025, 10, 21, 10, 0); 
 
         double cost = service.calculateStayCost(checkin, checkout, false);
-        // Current logic counts each calendar day inclusively, so two weekdays => 120 *
-        // 2 = 240
+        
+        
         assertThat(cost).isEqualTo(240.00);
     }
 
     @Test
     void calculateStayCost_weekend_with_car_and_late_checkout() {
-        LocalDateTime checkin = LocalDateTime.of(2025, 10, 18, 15, 0); // Saturday
-        LocalDateTime checkout = LocalDateTime.of(2025, 10, 19, 13, 0); // Sunday after 12 -> surcharge applies on last
-                                                                        // day
+        LocalDateTime checkin = LocalDateTime.of(2025, 10, 18, 15, 0); 
+        LocalDateTime checkout = LocalDateTime.of(2025, 10, 19, 13, 0); 
+                                                                        
 
         double cost = service.calculateStayCost(checkin, checkout, true);
 
-        // Saturday: daily 180 + car 20 = 200
-        // Sunday (last day): daily 180 + car 20 + 50% surcharge on daily (180 * 0.5 =
-        // 90) => 290
-        // Total = 200 + 290 = 490
+        
+        
+        
+        
         assertThat(cost).isEqualTo(490.0);
     }
 
@@ -80,7 +80,7 @@ public class HotelStayServiceTest {
 
         when(guestRepository.findById(2L)).thenReturn(Optional.of(guest));
 
-        // Simulate repository assigning an ID on save and return the persisted entity
+        
         when(stayRepository.save(any(HotelStay.class))).thenAnswer(new Answer<HotelStay>() {
             @Override
             public HotelStay answer(InvocationOnMock invocation) {
@@ -120,8 +120,8 @@ public class HotelStayServiceTest {
         HotelStayResponse afterCheckIn = service.checkIn(10L, checkin);
         assertThat(afterCheckIn.getStatus()).isEqualTo(HotelStayStatus.CHECKED_IN);
 
-        // Prepare for checkout: set checkin time in the stay object (service uses
-        // repository-managed object)
+        
+        
         stay.setCheckinTime(checkin);
         stay.setStatus(HotelStayStatus.CHECKED_IN);
 
@@ -135,7 +135,7 @@ public class HotelStayServiceTest {
 
     @Test
     void getDashboardMetrics_returns_expected_aggregates() {
-        // prepare repository mock responses
+        
         when(stayRepository.countPlannedOverlappingPeriod(any(LocalDate.class), any(LocalDate.class))).thenReturn(3L);
         when(stayRepository.countByStatus(HotelStayStatus.CHECKED_IN)).thenReturn(2L);
         when(stayRepository.sumNumberOfGuestsByStatus(HotelStayStatus.CHECKED_IN)).thenReturn(5L);
@@ -161,10 +161,10 @@ public class HotelStayServiceTest {
 
         when(stayRepository.findById(50L)).thenReturn(Optional.of(stay));
 
-        // Should not throw
+        
         service.deleteReservationIfReserved(50L);
 
-        // verify delete called
+        
         org.mockito.Mockito.verify(stayRepository).delete(stay);
     }
 
