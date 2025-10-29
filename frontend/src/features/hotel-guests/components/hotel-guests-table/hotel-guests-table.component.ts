@@ -9,9 +9,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HotelGuestsPageService } from '../../services/application/hotel-guests-page.service';
+import { Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ThemeService } from '../../../../core/services/theme/theme.service';
 import { HotelGuestsDeleteModalComponent } from '../hotel-guests-delete-modal/hotel-guests-delete-modal.component';
+import { FormatDocumentPipe } from '../../../../core/pipes/format-document.pipe';
+import { FormatPhonePipe } from '../../../../core/pipes/format-phone.pipe';
 import { HotelGuestsService } from '../../services/api/hotel-guests.service';
 import { HotelGuestFilters } from '../../shared/hotel-guests.model';
 
@@ -31,6 +34,8 @@ import { HotelGuestFilters } from '../../shared/hotel-guests.model';
     MatMenuModule,
     MatTooltipModule,
     MatDialogModule,
+    FormatDocumentPipe,
+    FormatPhonePipe,
   ],
 })
 export class HotelGuestsTableComponent {
@@ -59,11 +64,16 @@ export class HotelGuestsTableComponent {
   constructor(
     private pageService: HotelGuestsPageService,
     private dialog: MatDialog,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private router: Router
   ) {}
 
   openEditGuest(element: any) {
-    console.log('openEditGuest', element);
+    // navigate to the add/edit page with the guest id so the page loads in edit mode
+    // pass the guest object in navigation state so the add/edit page can prefill without an HTTP request
+    this.router.navigate(['/adicionar-hospede', element.id], {
+      state: { guest: element },
+    });
   }
 
   openDeleteGuest(element: any) {

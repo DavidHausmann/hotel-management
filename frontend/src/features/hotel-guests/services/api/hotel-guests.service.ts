@@ -78,4 +78,17 @@ export class HotelGuestsService {
   }) {
     return this.http.post<HotelGuestResponse>(`${this.API}api/guest`, payload);
   }
+
+  getGuest(id: number) {
+    return this.http.get<HotelGuestResponse>(`${this.API}api/guest/${id}`);
+  }
+
+  updateGuest(id: number, payload: {
+    name?: string;
+    document?: string;
+    phone?: string;
+    hasCar?: boolean;
+  }) {
+    return this.http.patch<HotelGuestResponse>(`${this.API}api/guest/${id}`, payload);
+  }
 }

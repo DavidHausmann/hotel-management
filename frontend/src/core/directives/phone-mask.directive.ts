@@ -18,11 +18,14 @@ export class PhoneMaskDirective {
     if (digits.length <= 2) {
       formatted = digits;
     } else if (digits.length <= 6) {
-      formatted = `(${digits.slice(0, 2)})${digits.slice(2)}`;
+      // add space after DDD
+      formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
     } else if (digits.length <= 10) {
-      formatted = `(${digits.slice(0, 2)})${digits.slice(2, 6)}-${digits.slice(6)}`;
+      // (DD) XXXX-XXXX
+      formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
     } else {
-      formatted = `(${digits.slice(0, 2)})${digits.slice(2, 7)}-${digits.slice(7)}`;
+      // (DD) 9XXXX-XXXX
+      formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
     }
 
     this.setValue(formatted);

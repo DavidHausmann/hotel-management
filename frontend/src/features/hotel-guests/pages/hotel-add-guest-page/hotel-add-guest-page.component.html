@@ -1,11 +1,11 @@
 <section class="hotel__add_guest__page">
   <app-breadcrumbs
     [previousPageText]="'Hóspedes'"
-    [currentPageText]="'Adicionar Hóspede'"
+    [currentPageText]="isEdit ? 'Editar Hóspede' : 'Adicionar Hóspede'"
     (backFunction)="goToGuests()"
   ></app-breadcrumbs>
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="guest__form">
-    <h2>Adicionar Hóspede</h2>
+    <h2>{{ isEdit ? 'Editar Hóspede' : 'Adicionar Hóspede' }}</h2>
 
     <mat-form-field appearance="fill" class="full__width">
       <mat-label>Nome</mat-label>
@@ -54,12 +54,11 @@
       </button>
       <button
         mat-flat-button
-        color="warn"
         color="primary"
         type="submit"
         [disabled]="form.invalid || submitting"
       >
-        <span *ngIf="!submitting">Adicionar hóspede</span>
+        <span *ngIf="!submitting">{{ isEdit ? 'Salvar alterações' : 'Adicionar hóspede' }}</span>
         <mat-progress-spinner
           *ngIf="submitting"
           diameter="20"

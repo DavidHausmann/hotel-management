@@ -34,7 +34,8 @@ export function cpfValidator(): ValidatorFn {
 }
 
 // Phone utils
-export const PHONE_REGEX = /^\(\d{2}\)9\d{4}-\d{4}$/;
+// Accept phones formatted with a space after the DDD: (DD) 9XXXX-XXXX or (DD) XXXX-XXXX
+export const PHONE_REGEX = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
 
 export function isValidPhone(value: string | null | undefined): boolean {
   if (!value) return false;

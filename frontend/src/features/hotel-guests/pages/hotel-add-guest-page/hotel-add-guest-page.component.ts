@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -20,7 +20,9 @@ import {
 } from '../../../../core/utils/validators';
 import { CpfMaskDirective } from '../../../../core/directives/cpf-mask.directive';
 import { PhoneMaskDirective } from '../../../../core/directives/phone-mask.directive';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { FormatPhonePipe } from '../../../../core/pipes/format-phone.pipe';
+import { FormatDocumentPipe } from '../../../../core/pipes/format-document.pipe';
 import { BreadcrumbsComponent } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
@@ -44,6 +46,8 @@ import { BreadcrumbsComponent } from '../../../../shared/components/breadcrumbs/
   styleUrls: ['./hotel-add-guest-page.component.scss'],
 })
 export class HotelAddGuestPageComponent {
+  isEdit = false;
+  guestId: number | null = null;
   readonly __breadcrumbsRef = BreadcrumbsComponent;
   form!: FormGroup;
 
@@ -54,6 +58,8 @@ export class HotelAddGuestPageComponent {
     private api: HotelGuestsService,
     private snack: MatSnackBar,
     private router: Router
+    ,
+    private route: ActivatedRoute
   ) {
     this.form = this.formBuilder.group({
       name: ['', [Validators.required]],
@@ -66,8 +72,56 @@ export class HotelAddGuestPageComponent {
       ?.setValidators([Validators.required, cpfValidator()]);
   }
 
+  ngOnInit(): void {
+    // First, check whether navigation state carried a guest object (when navigating from the table).
+    // Using navigation state avoids an extra HTTP request when the table already has the guest data.
+    const navState: any = history.state || {};
+    const guestFromState = navState.guest;
+
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      const id = Number(idParam);
+      if (!Number.isNaN(id)) {
+        this.isEdit = true;
+        this.guestId = id;
+
+        if (guestFromState && guestFromState.id === id) {
+          // Prefill from navigation state; no HTTP request.
+          const doc = new FormatDocumentPipe().transform(guestFromState.document);
+          const phone = new FormatPhonePipe().transform(guestFromState.phone);
+          this.form.patchValue({
+            name: guestFromState.name || '',
+            document: doc || '',
+            phone: phone || '',
+            hasCar: !!guestFromState.hasCar,
+          });
+        } else {
+          // No state available (direct link/bookmark) -> fetch from API
+          this.api.getGuest(id).subscribe({
+            next: (g) => {
+              const doc = new FormatDocumentPipe().transform(g.document);
+              const phone = new FormatPhonePipe().transform(g.phone);
+              this.form.patchValue({
+                name: g.name || '',
+                document: doc || '',
+                phone: phone || '',
+                hasCar: !!g.hasCar,
+              });
+            },
+            error: () => {
+              this.snack.open('Erro ao carregar hóspede para edição', 'Fechar', {
+                duration: 4000,
+              });
+              this.router.navigate(['/hospedes']);
+            },
+          });
+        }
+      }
+    }
+  }
+
   onSubmit() {
-    if (this.form.invalid) return;
+  if (this.form.invalid) return;
     this.submitting = true;
     const name = this.form.get('name')?.value as string;
     const document = this.form.get('document')?.value as string;
@@ -85,16 +139,22 @@ export class HotelAddGuestPageComponent {
       phone: phone || undefined,
       hasCar,
     };
-    this.api.createGuest(payload).subscribe({
+    const obs = this.isEdit && this.guestId
+      ? this.api.updateGuest(this.guestId, payload)
+      : this.api.createGuest(payload);
+
+    obs.subscribe({
       next: (resp) => {
-        this.snack.open('Hóspede criado com sucesso', 'Fechar', {
-          duration: 3000,
-        });
+        this.snack.open(
+          this.isEdit ? 'Hóspede atualizado com sucesso' : 'Hóspede criado com sucesso',
+          'Fechar',
+          { duration: 3000 }
+        );
         this.form.reset({ hasCar: false });
         this.router.navigate(['/hospedes']);
       },
       error: (err) => {
-        const msg = err?.error?.message || 'Erro ao criar hóspede';
+        const msg = err?.error?.message || (this.isEdit ? 'Erro ao atualizar hóspede' : 'Erro ao criar hóspede');
         this.snack.open(msg, 'Fechar', { duration: 5000 });
         this.submitting = false;
       },

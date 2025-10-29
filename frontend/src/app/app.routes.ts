@@ -22,6 +22,13 @@ export const routes: Routes = [
       ).then((m) => m.HotelAddGuestPageComponent),
   },
   {
+    path: 'adicionar-hospede/:id',
+    loadComponent: () =>
+      import(
+        '../features/hotel-guests/pages/hotel-add-guest-page/hotel-add-guest-page.component'
+      ).then((m) => m.HotelAddGuestPageComponent),
+  },
+  {
     path: 'reservas',
     loadComponent: () =>
       import(
