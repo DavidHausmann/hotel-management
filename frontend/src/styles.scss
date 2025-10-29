@@ -1,7 +1,5 @@
 @use "@angular/material" as mat;
 
-
-
 @include mat.core();
 
 // Use the Material v3 theming API: define colors and theme objects
@@ -196,6 +194,9 @@ body {
       background-color: #272727;
     }
   }
+  .home__chart {
+    background-color: #272727 !important;
+  }
 }
 
 .mat-mdc-button:not(:disabled) {
@@ -251,4 +252,3 @@ body {
     }
   }
 }
-

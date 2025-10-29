@@ -1,0 +1,8 @@
+.home__page__dashboard {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    app-home-chart {
+        flex-grow: 1;
+    }
+}

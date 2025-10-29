@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, tap, finalize } from 'rxjs/operators';
 import {
-  HotelReservationsService,
-  ReservationResponse,
+  HotelReservationsService
 } from '../../services/api/hotel-reservations.service';
+import { ReservationResponse } from '../../../../shared/hotel-reservations.model';
 
 @Injectable({
   providedIn: 'root',

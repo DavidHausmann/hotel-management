@@ -5,8 +5,8 @@ export const routes: Routes = [
   {
     path: 'home',
     loadComponent: () =>
-      import('../features/home/home.component').then(
-        (module) => module.HomeComponent
+      import('../features/home/pages/home-page/home-page.component').then(
+        (module) => module.HomePageComponent
       ),
   },
   {

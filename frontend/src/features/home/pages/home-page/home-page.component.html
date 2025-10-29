@@ -1,0 +1,33 @@
+<section class="home__page__dashboard">
+  <app-home-chart
+    [title]="'Total de reservas (Mês atual)'"
+    [imageUrl]="'/assets/icons/reserved.svg'"
+    [imageAlt]="'Número de reservas do mês atual'"
+    [text]="getTotalReservationsContent()"
+  >
+  </app-home-chart>
+
+  <app-home-chart
+    [title]="'Total de check-ins ativos'"
+    [imageUrl]="'/assets/icons/checked-in.svg'"
+    [imageAlt]="'Número de check-ins ativos'"
+    [text]="getTotalActiveCheckinsContent()"
+  >
+  </app-home-chart>
+
+  <app-home-chart
+    [title]="'Total de hóspedes no hotel'"
+    [imageUrl]="'/assets/icons/guests.svg'"
+    [imageAlt]="'Número de hóspedes no hotel'"
+    [text]="getTotalCurrentGuestsContent()"
+  >
+  </app-home-chart>
+
+  <app-home-chart
+    [title]="'Total de carros no hotel'"
+    [imageUrl]="'/assets/icons/has-car.svg'"
+    [imageAlt]="'Número de carros no hotel'"
+    [text]="getTotalCurrentCarsContent()"
+  >
+  </app-home-chart>
+</section>

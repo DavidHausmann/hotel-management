@@ -1,26 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-export interface ReservationResponse {
-  id: number;
-  checkinTime?: string;
-  checkoutTime?: string;
-  status?: 'CHECKED_IN' | 'CHECKED_OUT' | 'RESERVED';
-  totalAmount?: number;
-  hotelGuestId?: number;
-  plannedStartDate?: string;
-  plannedEndDate?: string;
-  numberOfGuests?: number;
-}
-
-export interface Page<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
+import { Page, ReservationResponse } from '../../../../shared/hotel-reservations.model';
 
 @Injectable({
   providedIn: 'root',

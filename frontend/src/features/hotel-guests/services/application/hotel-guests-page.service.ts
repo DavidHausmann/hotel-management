@@ -1,20 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, tap, finalize } from 'rxjs/operators';
+import { HotelGuestsService } from '../../services/api/hotel-guests.service';
 import {
-  HotelGuestsService,
+  HotelGuestFilters,
   HotelGuestResponse,
-} from '../../services/api/hotel-guests.service';
-import { HotelGuestFilters } from '../../shared/hotel-guests.model';
+} from '../../shared/hotel-guests.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HotelGuestsPageService {
-  constructor(private api: HotelGuestsService) {}
-
-  
-  
   private cachedPage$ = new BehaviorSubject<{
     items: HotelGuestResponse[];
     pagination: {
@@ -25,8 +21,8 @@ export class HotelGuestsPageService {
     };
   } | null>(null);
   private loading$ = new BehaviorSubject<boolean>(false);
+  constructor(private api: HotelGuestsService) {}
 
-  
   fetchGuestsPage(
     options?: HotelGuestFilters,
     page = 0,
@@ -40,7 +36,6 @@ export class HotelGuestsPageService {
       pageNumber: number;
     };
   }> {
-    
     this.loading$.next(true);
     return this.api.searchGuests(options || {}, page, size).pipe(
       map((page) => ({
@@ -52,14 +47,13 @@ export class HotelGuestsPageService {
           pageNumber: page.number,
         },
       })),
-      
+
       tap((mapped) => this.cachedPage$.next(mapped)),
-      
+
       finalize(() => this.loading$.next(false))
     );
   }
 
-  
   getCachedGuestsPage(): Observable<{
     items: HotelGuestResponse[];
     pagination: {
@@ -72,7 +66,6 @@ export class HotelGuestsPageService {
     return this.cachedPage$.asObservable();
   }
 
-  
   getLastCachedSnapshot(): {
     items: HotelGuestResponse[];
     pagination: {
@@ -85,7 +78,6 @@ export class HotelGuestsPageService {
     return this.cachedPage$.getValue();
   }
 
-  
   getLoading(): Observable<boolean> {
     return this.loading$.asObservable();
   }

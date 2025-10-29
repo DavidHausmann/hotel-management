@@ -23,3 +23,19 @@ export interface HotelGuestFilters {
   inHotel?: boolean | null;
   reserved?: boolean | null;
 }
+
+export interface HotelGuestResponse {
+  id: number;
+  name: string;
+  document: string;
+  phone: string;
+  hasCar: boolean;
+}
+
+export interface Page<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}

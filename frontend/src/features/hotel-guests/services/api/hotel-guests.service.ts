@@ -1,22 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-export interface HotelGuestResponse {
-  id: number;
-  name: string;
-  document: string;
-  phone: string;
-  hasCar: boolean;
-}
-
-export interface Page<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
+import { HotelGuestResponse, Page } from '../../shared/hotel-guests.model';
 
 @Injectable({
   providedIn: 'root',
