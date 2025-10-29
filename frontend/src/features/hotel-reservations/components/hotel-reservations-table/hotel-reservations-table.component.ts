@@ -71,7 +71,6 @@ export class HotelReservationsTableComponent implements OnInit {
   }
 
   openCheckout(element: any) {
-    console.log('checkout', element);
   }
 
   openDeleteReservation(element: any) {

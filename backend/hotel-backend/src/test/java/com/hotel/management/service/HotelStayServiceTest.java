@@ -42,28 +42,22 @@ public class HotelStayServiceTest {
 
     @Test
     void calculateStayCost_weekday_no_car() {
-        LocalDateTime checkin = LocalDateTime.of(2025, 10, 20, 15, 0); 
-        LocalDateTime checkout = LocalDateTime.of(2025, 10, 21, 10, 0); 
+        LocalDateTime checkin = LocalDateTime.of(2025, 10, 20, 15, 0);
+        LocalDateTime checkout = LocalDateTime.of(2025, 10, 21, 10, 0);
 
         double cost = service.calculateStayCost(checkin, checkout, false);
-        
-        
-        assertThat(cost).isEqualTo(240.00);
+
+        assertThat(cost).isEqualTo(120.00);
     }
 
     @Test
     void calculateStayCost_weekend_with_car_and_late_checkout() {
-        LocalDateTime checkin = LocalDateTime.of(2025, 10, 18, 15, 0); 
-        LocalDateTime checkout = LocalDateTime.of(2025, 10, 19, 13, 0); 
-                                                                        
+        LocalDateTime checkin = LocalDateTime.of(2025, 10, 18, 15, 0);
+        LocalDateTime checkout = LocalDateTime.of(2025, 10, 19, 13, 0);
 
         double cost = service.calculateStayCost(checkin, checkout, true);
 
-        
-        
-        
-        
-        assertThat(cost).isEqualTo(490.0);
+        assertThat(cost).isEqualTo(290.0);
     }
 
     @Test
@@ -80,7 +74,6 @@ public class HotelStayServiceTest {
 
         when(guestRepository.findById(2L)).thenReturn(Optional.of(guest));
 
-        
         when(stayRepository.save(any(HotelStay.class))).thenAnswer(new Answer<HotelStay>() {
             @Override
             public HotelStay answer(InvocationOnMock invocation) {
@@ -120,8 +113,6 @@ public class HotelStayServiceTest {
         HotelStayResponse afterCheckIn = service.checkIn(10L, checkin);
         assertThat(afterCheckIn.getStatus()).isEqualTo(HotelStayStatus.CHECKED_IN);
 
-        
-        
         stay.setCheckinTime(checkin);
         stay.setStatus(HotelStayStatus.CHECKED_IN);
 
@@ -135,7 +126,7 @@ public class HotelStayServiceTest {
 
     @Test
     void getDashboardMetrics_returns_expected_aggregates() {
-        
+
         when(stayRepository.countPlannedOverlappingPeriod(any(LocalDate.class), any(LocalDate.class))).thenReturn(3L);
         when(stayRepository.countByStatus(HotelStayStatus.CHECKED_IN)).thenReturn(2L);
         when(stayRepository.sumNumberOfGuestsByStatus(HotelStayStatus.CHECKED_IN)).thenReturn(5L);
@@ -161,10 +152,8 @@ public class HotelStayServiceTest {
 
         when(stayRepository.findById(50L)).thenReturn(Optional.of(stay));
 
-        
         service.deleteReservationIfReserved(50L);
 
-        
         org.mockito.Mockito.verify(stayRepository).delete(stay);
     }
 

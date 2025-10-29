@@ -15,7 +15,6 @@ export class ThemeService {
   init(): void {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      console.log('Stored theme:', stored);
       if (stored === 'dark' || stored === 'light') {
         this.theme = stored as AppTheme;
         this.applyThemeToDocument(this.theme);

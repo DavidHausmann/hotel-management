@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
@@ -25,12 +26,12 @@ public class HotelStayService {
 
     private static final Logger log = LoggerFactory.getLogger(HotelStayService.class);
 
-    private static final double DAILY_RATE_WEEKDAY = 120.00; 
-    private static final double DAILY_RATE_WEEKEND = 180.00; 
-    private static final double CAR_FEE_WEEKDAY = 15.00; 
-    private static final double CAR_FEE_WEEKEND = 20.00; 
-    private static final int CHECKOUT_HOUR_LIMIT = 12; 
-    private static final double LATE_CHECKOUT_SURCHARGE = 0.50; 
+    private static final double DAILY_RATE_WEEKDAY = 120.00;
+    private static final double DAILY_RATE_WEEKEND = 180.00;
+    private static final double CAR_FEE_WEEKDAY = 15.00;
+    private static final double CAR_FEE_WEEKEND = 20.00;
+    private static final int CHECKOUT_HOUR_LIMIT = 12;
+    private static final double LATE_CHECKOUT_SURCHARGE = 0.50;
 
     private final HotelStayRepository stayRepository;
     private final HotelGuestRepository hotelGuestRepository;
@@ -43,7 +44,6 @@ public class HotelStayService {
         dto.setStatus(stay.getStatus());
         dto.setTotalAmount(stay.getTotalAmount());
 
-        
         if (stay.getHotelGuest() != null) {
             dto.setHotelGuestId(stay.getHotelGuest().getId());
         }
@@ -58,7 +58,6 @@ public class HotelStayService {
         this.hotelGuestRepository = hotelGuestRepository;
     }
 
-    
     public Page<HotelStayResponse> search(String name, String document, String phone, LocalDate start,
             LocalDate end, Pageable pageable) {
         String n = (name == null || name.isBlank()) ? null : name;
@@ -69,14 +68,13 @@ public class HotelStayService {
             Page<HotelStay> page = stayRepository.findByFilters(n, d, p, start, end, pageable);
             return page.map(this::mapToResponse);
         } catch (Exception error) {
-            
-            
+
             log.warn("findByFilters failed, falling back to in-memory filtering", error);
             List<HotelStay> all = stayRepository.findAll();
 
             List<HotelStay> filtered = all.stream().filter(s -> {
                 boolean ok = true;
-                
+
                 HotelGuest g = s.getHotelGuest();
                 if (n != null) {
                     ok = g != null && g.getName() != null && g.getName().toLowerCase().contains(n.toLowerCase());
@@ -111,9 +109,6 @@ public class HotelStayService {
         }
     }
 
-    
-
-    
     @Transactional
     public HotelStayResponse createReservation(Long hotelGuestId, java.time.LocalDate plannedStartDate,
             java.time.LocalDate plannedEndDate, Integer numberOfGuests) {
@@ -131,7 +126,6 @@ public class HotelStayService {
         return mapToResponse(saved);
     }
 
-    
     public List<HotelStayResponse> findHotelGuestsCurrentlyInHotel() {
         return stayRepository.findByStatus(HotelStayStatus.CHECKED_IN)
                 .stream()
@@ -139,7 +133,6 @@ public class HotelStayService {
                 .collect(Collectors.toList());
     }
 
-    
     public List<HotelStayResponse> findHotelGuestsWithPendingReservations() {
         return stayRepository.findByStatus(HotelStayStatus.RESERVED)
                 .stream()
@@ -147,9 +140,6 @@ public class HotelStayService {
                 .collect(Collectors.toList());
     }
 
-    
-
-    
     @Transactional
     public HotelStayResponse checkIn(Long stayId, LocalDateTime checkinTime) {
         HotelStay stay = stayRepository.findById(stayId)
@@ -159,9 +149,8 @@ public class HotelStayService {
             throw new IllegalStateException("O check-in só pode ser feito em uma reserva PENDENTE.");
         }
 
-        
         if (checkinTime.getHour() < 14) {
-            
+
             System.out.println("ALERTA: Check-in realizado antes das 14h00min.");
         }
 
@@ -171,7 +160,6 @@ public class HotelStayService {
         return mapToResponse(saved);
     }
 
-    
     @Transactional
     public HotelStayResponse checkOut(Long stayId, LocalDateTime checkoutTime) {
         HotelStay stay = stayRepository.findById(stayId)
@@ -186,7 +174,6 @@ public class HotelStayService {
                     + ") não pode ser antes da hora do check-in (" + stay.getCheckinTime() + ").");
         }
 
-        
         Double totalAmount = calculateStayCost(stay.getCheckinTime(), checkoutTime, stay.getHotelGuest().isHasCar());
 
         stay.setCheckoutTime(checkoutTime);
@@ -197,7 +184,6 @@ public class HotelStayService {
         return mapToResponse(saved);
     }
 
-    
     @Transactional
     public void deleteReservationIfReserved(Long stayId) {
         HotelStay stay = stayRepository.findById(stayId)
@@ -210,11 +196,9 @@ public class HotelStayService {
         stayRepository.delete(stay);
     }
 
-    
     public com.hotel.management.dto.DashboardResponse getDashboardMetrics() {
         com.hotel.management.dto.DashboardResponse dto = new com.hotel.management.dto.DashboardResponse();
 
-        
         java.time.LocalDate now = java.time.LocalDate.now();
         java.time.LocalDate monthStart = now.withDayOfMonth(1);
         java.time.LocalDate monthEnd = now.withDayOfMonth(now.lengthOfMonth());
@@ -232,31 +216,30 @@ public class HotelStayService {
         return dto;
     }
 
-    
     public double calculateStayCost(LocalDateTime checkin, LocalDateTime checkout, boolean hasCar) {
-        LocalDateTime currentDay = checkin.toLocalDate().atStartOfDay();
-        LocalDateTime endDay = checkout.toLocalDate().atStartOfDay();
+        long nights = ChronoUnit.DAYS.between(checkin.toLocalDate(), checkout.toLocalDate());
+        if (nights <= 0)
+            nights = 1;
+
         double totalCost = 0.0;
 
-        
-        while (!currentDay.isAfter(endDay)) {
-            DayOfWeek dayOfWeek = currentDay.getDayOfWeek();
+        for (int i = 0; i < nights; i++) {
+            LocalDate nightDate = checkin.toLocalDate().plusDays(i);
+            DayOfWeek dayOfWeek = nightDate.getDayOfWeek();
             boolean isWeekend = dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
-            double dailyRate = isWeekend ? DAILY_RATE_WEEKEND : DAILY_RATE_WEEKDAY; 
-            double carFee = hasCar ? (isWeekend ? CAR_FEE_WEEKEND : CAR_FEE_WEEKDAY) : 0.0; 
-
+            double dailyRate = isWeekend ? DAILY_RATE_WEEKEND : DAILY_RATE_WEEKDAY;
+            double carFee = hasCar ? (isWeekend ? CAR_FEE_WEEKEND : CAR_FEE_WEEKDAY) : 0.0;
             double dailyCost = dailyRate + carFee;
-
-            
-            if (currentDay.isEqual(endDay)) {
-                if (checkout.getHour() > CHECKOUT_HOUR_LIMIT) { 
-                    double surcharge = dailyRate * LATE_CHECKOUT_SURCHARGE;
-                    dailyCost += surcharge;
-                }
-            }
-
             totalCost += dailyCost;
-            currentDay = currentDay.plusDays(1);
+        }
+
+        if (checkout.getHour() > CHECKOUT_HOUR_LIMIT) {
+            LocalDate lastNight = checkin.toLocalDate().plusDays(nights - 1);
+            DayOfWeek lastDow = lastNight.getDayOfWeek();
+            boolean lastIsWeekend = lastDow == DayOfWeek.SATURDAY || lastDow == DayOfWeek.SUNDAY;
+            double lastDailyRate = lastIsWeekend ? DAILY_RATE_WEEKEND : DAILY_RATE_WEEKDAY;
+            double surcharge = lastDailyRate * LATE_CHECKOUT_SURCHARGE;
+            totalCost += surcharge;
         }
 
         return totalCost;
