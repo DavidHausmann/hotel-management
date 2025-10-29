@@ -9,6 +9,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HotelGuestsPageService } from '../../services/application/hotel-guests-page.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ThemeService } from '../../../../core/services/theme/theme.service';
+import { HotelGuestsDeleteModalComponent } from '../hotel-guests-delete-modal/hotel-guests-delete-modal.component';
+import { HotelGuestsService } from '../../services/api/hotel-guests.service';
 import { HotelGuestFilters } from '../../shared/hotel-guests.model';
 
 @Component({
@@ -26,6 +30,7 @@ import { HotelGuestFilters } from '../../shared/hotel-guests.model';
     MatSelectModule,
     MatMenuModule,
     MatTooltipModule,
+    MatDialogModule,
   ],
 })
 export class HotelGuestsTableComponent {
@@ -51,14 +56,37 @@ export class HotelGuestsTableComponent {
   filterDocument: string | undefined;
   filterPhone: string | undefined;
 
-  constructor(private pageService: HotelGuestsPageService) {}
+  constructor(
+    private pageService: HotelGuestsPageService,
+    private dialog: MatDialog,
+    private themeService: ThemeService
+  ) {}
 
   openEditGuest(element: any) {
     console.log('openEditGuest', element);
   }
 
   openDeleteGuest(element: any) {
-    console.log('openDeleteGuest', element);
+    const panelClass = this.themeService.isDarkMode()
+      ? 'dark__mode'
+      : 'light__mode';
+
+    const dialogRef = this.dialog.open(HotelGuestsDeleteModalComponent, {
+      data: {
+        id: element.id,
+        fullName: element.name,
+        document: element.document,
+      },
+      width: '420px',
+      panelClass,
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) return;
+      this.loadPage(
+        this.pageService.getLastCachedSnapshot()?.pagination.pageNumber || 0
+      );
+    });
   }
 
   ngOnInit(): void {

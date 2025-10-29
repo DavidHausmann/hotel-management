@@ -60,4 +60,11 @@ export class HotelGuestsService {
 
     return this.http.get<Page<HotelGuestResponse>>(`${this.API}api/guest/search`, { params: httpParams });
   }
+
+  /**
+   * Delete a guest by id.
+   */
+  deleteGuest(id: number) {
+    return this.http.delete<void>(`${this.API}api/guest/${id}`);
+  }
 }

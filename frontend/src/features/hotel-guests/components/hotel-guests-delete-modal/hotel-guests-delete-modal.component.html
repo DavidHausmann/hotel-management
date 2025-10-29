@@ -1,0 +1,26 @@
+<mat-dialog-content>
+  Tem certeza que deseja excluir o hóspede
+  <strong>{{ data.fullName || "selecionado" }}</strong> de CPF
+  <strong>{{ data.document || "desconhecido" }}</strong
+  >?
+  <div class="mt-2">Esta ação não pode ser desfeita.</div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="center">
+  <button mat-button (click)="onCancel()" [disabled]="loading">Cancelar</button>
+  <button
+    mat-flat-button
+    color="warn"
+    (click)="onConfirm()"
+    [disabled]="loading"
+    cdkFocusInitial
+  >
+    <mat-progress-spinner
+      *ngIf="loading"
+      mode="indeterminate"
+      diameter="18"
+      [strokeWidth]="2"
+    ></mat-progress-spinner>
+    <span *ngIf="!loading">Excluir</span>
+  </button>
+</mat-dialog-actions>
