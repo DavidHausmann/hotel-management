@@ -25,11 +25,14 @@ export class HotelGuestsService {
   private readonly API: string = 'http://localhost:8080/';
   constructor(private http: HttpClient) {}
 
-  /**
-   * Search guests with optional filters and pagination. Page size is capped to 30.
-   */
   searchGuests(
-    params: { name?: string; document?: string; phone?: string; inHotel?: boolean | null; reserved?: boolean | null } = {},
+    params: {
+      name?: string;
+      document?: string;
+      phone?: string;
+      inHotel?: boolean | null;
+      reserved?: boolean | null;
+    } = {},
     page = 0,
     size = 20
   ): Observable<Page<HotelGuestResponse>> {
@@ -50,7 +53,6 @@ export class HotelGuestsService {
     if (params.phone) {
       httpParams = httpParams.set('phone', params.phone);
     }
-    // boolean filters: only set when explicitly true or false (not null/undefined)
     if (params.inHotel !== undefined && params.inHotel !== null) {
       httpParams = httpParams.set('inHotel', String(params.inHotel));
     }
@@ -58,13 +60,22 @@ export class HotelGuestsService {
       httpParams = httpParams.set('reserved', String(params.reserved));
     }
 
-    return this.http.get<Page<HotelGuestResponse>>(`${this.API}api/guest/search`, { params: httpParams });
+    return this.http.get<Page<HotelGuestResponse>>(
+      `${this.API}api/guest/search`,
+      { params: httpParams }
+    );
   }
 
-  /**
-   * Delete a guest by id.
-   */
   deleteGuest(id: number) {
     return this.http.delete<void>(`${this.API}api/guest/${id}`);
+  }
+
+  createGuest(payload: {
+    name: string;
+    document: string;
+    phone?: string;
+    hasCar?: boolean;
+  }) {
+    return this.http.post<HotelGuestResponse>(`${this.API}api/guest`, payload);
   }
 }

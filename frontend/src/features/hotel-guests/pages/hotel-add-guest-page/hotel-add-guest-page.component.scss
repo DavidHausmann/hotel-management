@@ -1,0 +1,58 @@
+.host {
+  display: block;
+  padding: 24px;
+}
+
+.guest__form {
+  max-width: 620px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.full__width {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+button mat-progress-spinner {
+  vertical-align: middle;
+}
+
+.hotel__add_guest__page {
+  app-breadcrumbs {
+    display: none;
+  }
+  .guest__form {
+    h2 {
+      display: flex;
+      justify-content: center;
+    }
+  }
+  .actions {
+	display: flex;
+	gap: 8px;
+    .actions__previous {
+      display: block;
+    }
+  }
+}
+
+@media only screen and (min-width: 1025px) {
+  .hotel__add_guest__page {
+    app-breadcrumbs {
+      display: block;
+    }
+    .actions {
+      .actions__previous {
+        display: none;
+      }
+    }
+  }
+}

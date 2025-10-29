@@ -10,9 +10,16 @@ export const routes: Routes = [
   {
     path: 'hospedes',
     loadComponent: () =>
+      import('../features/hotel-guests/pages/hotel-guests-page/hotel-guests-page.component').then(
+        (m) => m.HotelGuestsPageComponent
+      ),
+  },
+  {
+    path: 'adicionar-hospede',
+    loadComponent: () =>
       import(
-        '../features/hotel-guests/pages/hotel-guests-page/hotel-guests-page.component'
-      ).then((m) => m.HotelGuestsPageComponent),
+        '../features/hotel-guests/pages/hotel-add-guest-page/hotel-add-guest-page.component'
+      ).then((m) => m.HotelAddGuestPageComponent),
   },
   {
     path: 'reservas',

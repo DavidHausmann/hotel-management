@@ -18,4 +18,8 @@ export class HotelGuestsPageComponent {
   goToHome() {
     this.router.navigate(['/home']);
   }
+
+  goToAddGuest() {
+    this.router.navigateByUrl('/adicionar-hospede');
+  }
 }

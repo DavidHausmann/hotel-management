@@ -1,0 +1,71 @@
+<section class="hotel__add_guest__page">
+  <app-breadcrumbs
+    [previousPageText]="'Hóspedes'"
+    [currentPageText]="'Adicionar Hóspede'"
+    (backFunction)="goToGuests()"
+  ></app-breadcrumbs>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="guest__form">
+    <h2>Adicionar Hóspede</h2>
+
+    <mat-form-field appearance="fill" class="full__width">
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="name" />
+      <mat-error *ngIf="form.get('name')?.hasError('required')"
+        >Nome é obrigatório</mat-error
+      >
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full__width">
+      <mat-label>Documento (CPF/CNPJ)</mat-label>
+      <input matInput formControlName="document" cpfMask />
+      <mat-error *ngIf="form.get('document')?.hasError('required')">
+        Documento é obrigatório
+      </mat-error>
+      <mat-error *ngIf="form.get('document')?.hasError('cpf')">
+        CPF inválido
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full__width">
+      <mat-label>Telefone</mat-label>
+      <input matInput formControlName="phone" phoneMask />
+      <mat-error *ngIf="form.get('phone')?.hasError('required')">
+        Telefone é obrigatório
+      </mat-error>
+      <mat-error *ngIf="form.get('phone')?.hasError('phone')">
+        Telefone inválido — formato esperado: (XX)9XXXX-XXXX
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full__width">
+      <mat-label>Possui carro</mat-label>
+      <mat-select formControlName="hasCar">
+        <mat-option [value]="true">Sim</mat-option>
+        <mat-option [value]="false">Não</mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('hasCar')?.hasError('required')">
+        Selecione se possui carro
+      </mat-error>
+    </mat-form-field>
+
+    <div class="actions">
+      <button class="actions__previous" mat-button (click)="goToGuests()">
+        Voltar
+      </button>
+      <button
+        mat-flat-button
+        color="warn"
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid || submitting"
+      >
+        <span *ngIf="!submitting">Adicionar hóspede</span>
+        <mat-progress-spinner
+          *ngIf="submitting"
+          diameter="20"
+          mode="indeterminate"
+        ></mat-progress-spinner>
+      </button>
+    </div>
+  </form>
+</section>
