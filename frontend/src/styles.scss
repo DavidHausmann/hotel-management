@@ -201,3 +201,7 @@ body {
     }
   }
 }
+
+.mat-mdc-button:not(:disabled) {
+  color: var(--hotel-management-secondary) !important;
+}

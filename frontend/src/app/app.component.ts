@@ -17,7 +17,9 @@ export class AppComponent implements OnInit {
 
   constructor(public themeService: ThemeService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.themeService.init();
+  }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
