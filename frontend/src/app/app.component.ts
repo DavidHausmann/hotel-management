@@ -11,7 +11,7 @@ import { ThemeService } from '../core/services/theme/theme.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  title = 'frontend';
+  title = 'hotel-management-frontend';
   guests: any[] = [];
   isMenuOpen = false;
 

@@ -4,6 +4,8 @@ Este repositório contém um sistema de exemplo para gerenciamento de reservas d
 
 Este README descreve como preparar o ambiente de desenvolvimento, executar a aplicação localmente e rodar os testes (Windows / PowerShell orientado). As instruções também incluem comandos cross-platform quando aplicável.
 
+---
+
 ## Visão geral da árvore relevante
 
 - `backend/hotel-backend` — API Java Spring Boot (Maven).
@@ -99,6 +101,8 @@ Notas
 
 - Prefira OpenJDK/Temurin para desenvolvimento (licença mais simples). Oracle JDK pode exigir permissões/licença adicionais em ambiente comercial.
 - Se houver múltiplas versões instaladas, use `update-alternatives` (Linux) ou ajuste `JAVA_HOME`/`PATH` para apontar para a versão 17 desejada.
+
+---
 
 ## Instalar pgAdmin 4 e rodar PostgreSQL local (Windows e Linux)
 
@@ -309,6 +313,8 @@ Linux / macOS:
 - Porta em uso: se `8080` estiver ocupado, altere `server.port` em `application.properties` ou defina por JVM: `-Dserver.port=9090`.
 - Variáveis de ambiente: lembre-se de exportar no mesmo shell onde roda o `mvnw` para que a JVM veja as variáveis.
 - Dependências do banco: se você preferir testar sem PostgreSQL, rode os testes do projeto (muitos usam mocks) ou ajuste a configuração para H2 temporariamente.
+
+---
 
 
 ## Frontend (Angular)
