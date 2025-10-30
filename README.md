@@ -161,6 +161,76 @@ java -jar target\hotel-backend-0.0.1-SNAPSHOT.jar
 - Variáveis de ambiente: lembre-se de exportar no mesmo shell onde roda o `mvnw` para que a JVM veja as variáveis.
 - Dependências do banco: se você preferir testar sem PostgreSQL, rode os testes do projeto (muitos usam mocks) ou ajuste a configuração para H2 temporariamente.
 
+### Instalar pgAdmin 4 e rodar PostgreSQL local (Windows)
+
+Se você quer uma interface gráfica para gerenciar o banco, o pgAdmin 4 é a opção recomendada. A seguir há duas abordagens: (A) instalar PostgreSQL+pgAdmin no Windows via instalador; (B) rodar PostgreSQL em um container Docker e conectar com pgAdmin (local ou em container).
+
+Opção A — instalar PostgreSQL + pgAdmin (Windows)
+
+- Baixe o instalador do PostgreSQL para Windows: https://www.postgresql.org/download/windows/
+- Execute o instalador e durante o processo escolha um usuário (normalmente `postgres`) e uma senha (ex.: `admin`).
+- Após a instalação abra o pgAdmin 4 (menu Iniciar → pgAdmin 4). Crie um novo Server (clicar com o botão direito em "Servers" → Create → Server...) e configure:
+	- General → Name: hotel-local
+	- Connection → Host name/address: localhost
+	- Port: 5432
+	- Maintenance database: postgres
+	- Username: postgres
+	- Password: (senha escolhida no instalador)
+
+Opção B — rodar PostgreSQL em Docker + (opcional) pgAdmin em Docker
+
+- Levantar o container PostgreSQL (cria o DB `hotel_db` e senha `admin`):
+
+```powershell
+docker run --name hotel-postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=hotel_db -p 5432:5432 -d postgres:16
+```
+
+- (Opcional) Rodar pgAdmin em container para administrar via browser:
+
+```powershell
+docker run --name hotel-pgadmin -p 8080:80 \
+	-e PGADMIN_DEFAULT_EMAIL=admin@local -e PGADMIN_DEFAULT_PASSWORD=admin \
+	-d dpage/pgadmin4
+```
+
+- Acesse pgAdmin em http://localhost:8080 (se tiver usado o container) ou abra o app local e cadastre um novo Server apontando para `localhost:5432` (ou `host.docker.internal` quando estiver conectando de dentro de outro container).
+
+Criar banco/usuário (se necessário)
+
+Se o banco `hotel_db` não existir, crie-o via pgAdmin ou psql:
+
+```sql
+CREATE DATABASE hotel_db;
+CREATE USER hotel_user WITH PASSWORD 'hotel_pass';
+GRANT ALL PRIVILEGES ON DATABASE hotel_db TO hotel_user;
+```
+
+Configurar a aplicação para apontar ao banco
+
+- A configuração padrão está em `backend/hotel-backend/src/main/resources/application.properties`. Para sobrescrever localmente via PowerShell, por exemplo:
+
+```powershell
+# $env:SPRING_DATASOURCE_URL = 'jdbc:postgresql://localhost:5432/hotel_db'
+# $env:SPRING_DATASOURCE_USERNAME = 'postgres'
+# $env:SPRING_DATASOURCE_PASSWORD = 'admin'
+```
+
+Testar a conexão e iniciar a aplicação
+
+```powershell
+# Verificar se a porta 5432 responde
+Test-NetConnection -ComputerName localhost -Port 5432
+
+# Iniciar o backend
+cd backend\hotel-backend
+.\mvnw.cmd spring-boot:run
+```
+
+Notas
+- Se o Test-NetConnection indicar que a conexão foi recusada, verifique se o serviço do PostgreSQL está em execução ou se o container Docker está ativo.
+- Em cenários Docker-for-Windows, use `host.docker.internal` como host quando containers precisarem acessar serviços que rodam no host Windows.
+- Não use senhas fracas em ambientes reais — use segredos/variáveis de ambiente seguras para produção.
+
 ---
 
 ## Frontend (Angular)
