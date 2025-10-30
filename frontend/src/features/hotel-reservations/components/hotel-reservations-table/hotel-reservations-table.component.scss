@@ -1,5 +1,7 @@
 .hotel__management__table {
   width: 100%;
+  position: relative; /* container for absolute overlay */
+  min-height: 220px; /* reserve space to reduce layout jumps during reloads */
 }
 
 .table-scroll {
@@ -13,4 +15,12 @@
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease-in-out;
+}
+
+.loading-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
 }
