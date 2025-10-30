@@ -100,7 +100,7 @@ Notas
 - Prefira OpenJDK/Temurin para desenvolvimento (licença mais simples). Oracle JDK pode exigir permissões/licença adicionais em ambiente comercial.
 - Se houver múltiplas versões instaladas, use `update-alternatives` (Linux) ou ajuste `JAVA_HOME`/`PATH` para apontar para a versão 17 desejada.
 
-### Instalar pgAdmin 4 e rodar PostgreSQL local (Windows e Linux)
+## Instalar pgAdmin 4 e rodar PostgreSQL local (Windows e Linux)
 
 Se você quer uma interface gráfica para gerenciar o banco, o pgAdmin 4 é a opção recomendada. A seguir há duas abordagens: (A) instalar PostgreSQL+pgAdmin no Windows via instalador; (B) rodar PostgreSQL em um container Docker e conectar com pgAdmin (local ou em container).
 
