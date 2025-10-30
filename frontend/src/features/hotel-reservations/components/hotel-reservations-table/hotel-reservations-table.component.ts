@@ -54,6 +54,7 @@ export class HotelReservationsTableComponent implements OnInit {
   filterPhone: string | undefined;
   filterStartDate: string | undefined; 
   filterEndDate: string | undefined; 
+  filterStatus: string | undefined;
 
   get page$() {
     return this.pageService.getCachedReservationsPage();
@@ -145,12 +146,13 @@ export class HotelReservationsTableComponent implements OnInit {
   }
 
   loadPage(pageNumber: number) {
-    const options: { name?: string; document?: string; phone?: string; startDate?: string; endDate?: string } = {};
+    const options: { name?: string; document?: string; phone?: string; startDate?: string; endDate?: string; status?: string } = {};
     if (this.filterName) options.name = this.filterName;
     if (this.filterDocument) options.document = this.filterDocument;
     if (this.filterPhone) options.phone = this.filterPhone;
     if (this.filterStartDate) options.startDate = this.filterStartDate;
     if (this.filterEndDate) options.endDate = this.filterEndDate;
+    if (this.filterStatus) options.status = this.filterStatus;
 
     this.pageService.fetchReservationsPage(options, pageNumber, this.pageSize).subscribe({
       error: () => {},

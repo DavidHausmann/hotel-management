@@ -47,6 +47,7 @@ export class HotelReservationsPageComponent {
   filterPhone = '';
   filterStartDate: Date | null = null;
   filterEndDate: Date | null = null;
+  filterStatus: string | undefined = undefined;
 
   constructor(private router: Router) {}
 
@@ -69,6 +70,7 @@ export class HotelReservationsPageComponent {
     this.table.filterEndDate = this.filterEndDate
       ? this.filterEndDate.toISOString().slice(0, 10)
       : undefined;
+    this.table.filterStatus = this.filterStatus || undefined;
     this.table.loadPage(0);
     this.filterComp?.startClose();
   }
@@ -79,11 +81,13 @@ export class HotelReservationsPageComponent {
     this.filterPhone = '';
     this.filterStartDate = null;
     this.filterEndDate = null;
+    this.filterStatus = undefined;
     this.table.filterName = undefined;
     this.table.filterDocument = undefined;
     this.table.filterPhone = undefined;
     this.table.filterStartDate = undefined;
     this.table.filterEndDate = undefined;
+    this.table.filterStatus = undefined;
     this.table.loadPage(0);
     this.filterComp?.startClose();
   }

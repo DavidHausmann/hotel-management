@@ -125,6 +125,7 @@ public class HotelStayController {
             @RequestParam(required = false) String phone,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) com.hotel.management.model.HotelStayStatus status,
             Pageable pageable) {
 
         int maxSize = 30;
@@ -134,7 +135,7 @@ public class HotelStayController {
         }
 
         org.springframework.data.domain.Page<HotelStayResponse> page = hotelStayService.search(name, document, phone,
-                startDate, endDate, pageable);
+                startDate, endDate, status, pageable);
 
         return ResponseEntity.ok(page);
     }

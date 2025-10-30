@@ -60,13 +60,13 @@ public class HotelStayService {
     }
 
     public Page<HotelStayResponse> search(String name, String document, String phone, LocalDate start,
-            LocalDate end, Pageable pageable) {
+            LocalDate end, com.hotel.management.model.HotelStayStatus status, Pageable pageable) {
         String n = (name == null || name.isBlank()) ? null : name;
         String d = (document == null || document.isBlank()) ? null : document;
         String p = (phone == null || phone.isBlank()) ? null : phone;
 
         try {
-            Page<HotelStay> page = stayRepository.findByFilters(n, d, p, start, end, pageable);
+            Page<HotelStay> page = stayRepository.findByFilters(n, d, p, start, end, status, pageable);
             return page.map(this::mapToResponse);
         } catch (Exception error) {
 
@@ -93,6 +93,10 @@ public class HotelStayService {
                 }
                 if (ok && end != null) {
                     ok = s.getPlannedStartDate() != null && !s.getPlannedStartDate().isAfter(end);
+                }
+
+                if (ok && status != null) {
+                    ok = s.getStatus() == status;
                 }
 
                 return ok;

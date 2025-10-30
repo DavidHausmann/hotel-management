@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, tap, finalize } from 'rxjs/operators';
-import {
-  HotelReservationsService
-} from '../../services/api/hotel-reservations.service';
+import { HotelReservationsService } from '../../services/api/hotel-reservations.service';
 import { ReservationResponse } from '../../../../shared/hotel-reservations.model';
 
 @Injectable({
@@ -25,7 +23,14 @@ export class HotelReservationsPageService {
   private loading$ = new BehaviorSubject<boolean>(false);
 
   fetchReservationsPage(
-    options: { name?: string; document?: string; phone?: string; startDate?: string; endDate?: string } = {},
+    options: {
+      name?: string;
+      document?: string;
+      phone?: string;
+      startDate?: string;
+      endDate?: string;
+      status?: string;
+    } = {},
     page = 0,
     size = 20
   ): Observable<{

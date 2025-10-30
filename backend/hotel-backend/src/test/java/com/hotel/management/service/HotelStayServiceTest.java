@@ -239,11 +239,12 @@ public class HotelStayServiceTest {
         org.springframework.data.domain.Page<HotelStay> page = new org.springframework.data.domain.PageImpl<>(
                 java.util.List.of(stay));
 
-        when(stayRepository.findByFilters(any(), any(), any(), any(), any(),
+        when(stayRepository.findByFilters(any(), any(), any(), any(), any(), any(),
                 any(org.springframework.data.domain.Pageable.class)))
                 .thenReturn(page);
 
         org.springframework.data.domain.Page<HotelStayResponse> result = service.search("João", null, null, null, null,
+                null,
                 org.springframework.data.domain.PageRequest.of(0, 10));
 
         assertThat(result.getTotalElements()).isEqualTo(1);

@@ -103,6 +103,17 @@ describe('HotelReservationsTableComponent', () => {
     );
   });
 
+  it('loadPage should include status when filterStatus is set', () => {
+    fetchSpy.calls.reset();
+    component.filterStatus = 'CHECKED_IN';
+    component.loadPage(0);
+    expect(fetchSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({ status: 'CHECKED_IN' }),
+      0,
+      component.pageSize
+    );
+  });
+
   it('translateStatus should return localized strings', () => {
     expect(component.translateStatus('CHECKED_IN')).toContain('Check-in');
     expect(component.translateStatus('CHECKED_OUT')).toContain('Check-out');

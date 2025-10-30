@@ -31,6 +31,7 @@ describe('HotelReservationsPageComponent', () => {
     component.filterPhone = '999';
     component.filterStartDate = new Date('2025-11-01');
     component.filterEndDate = new Date('2025-11-02');
+    component.filterStatus = 'CHECKED_IN';
     
     component.filterComp = { startClose: jasmine.createSpy('startClose') } as any;
     component.onApplyFilters();
@@ -39,6 +40,7 @@ describe('HotelReservationsPageComponent', () => {
     expect(component.table.filterPhone).toBe('999');
     expect(component.table.filterStartDate).toBe('2025-11-01');
     expect(component.table.filterEndDate).toBe('2025-11-02');
+    expect(component.table.filterStatus).toBe('CHECKED_IN');
     expect(tableStub.loadPage).toHaveBeenCalledWith(0);
     expect(component.filterComp?.startClose).toHaveBeenCalled();
   });
@@ -51,6 +53,7 @@ describe('HotelReservationsPageComponent', () => {
     component.filterPhone = 'z';
     component.filterStartDate = new Date();
     component.filterEndDate = new Date();
+    component.filterStatus = 'RESERVED';
     component.filterComp = { startClose: jasmine.createSpy('startClose') } as any;
     component.onClearFilters();
     expect(component.filterName).toBe('');
@@ -58,6 +61,8 @@ describe('HotelReservationsPageComponent', () => {
     expect(component.filterPhone).toBe('');
     expect(component.filterStartDate).toBeNull();
     expect(component.filterEndDate).toBeNull();
+    expect(component.filterStatus).toBeUndefined();
+    expect(component.table.filterStatus).toBeUndefined();
     expect(tableStub.loadPage).toHaveBeenCalledWith(0);
     expect(component.filterComp?.startClose).toHaveBeenCalled();
   });

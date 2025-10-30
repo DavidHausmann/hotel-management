@@ -29,18 +29,15 @@ public class HotelStayControllerTest {
 
         private MockMvc mockMvc;
 
-        
         private com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
         private void configureObjectMapper() {
                 objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
                 objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-                
+
                 objectMapper.addMixIn(org.springframework.data.domain.PageImpl.class, PageImplMixin.class);
         }
 
-        
-        
         @com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "pageable", "sort" })
         private static abstract class PageImplMixin {
         }
@@ -58,8 +55,6 @@ public class HotelStayControllerTest {
                 org.springframework.http.converter.json.MappingJackson2HttpMessageConverter converter = new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(
                                 objectMapper);
 
-                
-                
                 mockMvc = MockMvcBuilders.standaloneSetup(controller)
                                 .setControllerAdvice(new com.hotel.management.exception.GlobalExceptionHandler())
                                 .setMessageConverters(converter)
@@ -152,7 +147,7 @@ public class HotelStayControllerTest {
 
         @Test
         void deleteReservation_returns_no_content_when_reserved() throws Exception {
-                
+
                 org.mockito.Mockito.doNothing().when(hotelStayService).deleteReservationIfReserved(100L);
 
                 mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -184,6 +179,7 @@ public class HotelStayControllerTest {
                                 java.util.List.of(resp));
 
                 org.mockito.Mockito.doReturn(page).when(hotelStayService).search(any(), any(), any(), any(), any(),
+                                any(),
                                 any(org.springframework.data.domain.Pageable.class));
 
                 mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -193,5 +189,65 @@ public class HotelStayControllerTest {
                                 .param("size", "5"))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.content[0].id").value(300));
+        }
+
+        @Test
+        void search_with_status_reserved_returns_paged_results() throws Exception {
+                HotelStayResponse resp = new HotelStayResponse();
+                resp.setId(301L);
+
+                org.springframework.data.domain.Page<HotelStayResponse> page = new org.springframework.data.domain.PageImpl<>(
+                                java.util.List.of(resp));
+
+                org.mockito.Mockito.doReturn(page).when(hotelStayService).search(any(), any(), any(), any(), any(),
+                                eq(HotelStayStatus.RESERVED), any(org.springframework.data.domain.Pageable.class));
+
+                mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .get("/api/stay/search")
+                                .param("status", "RESERVED")
+                                .param("page", "0")
+                                .param("size", "5"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.content[0].id").value(301));
+        }
+
+        @Test
+        void search_with_status_checkedIn_returns_paged_results() throws Exception {
+                HotelStayResponse resp = new HotelStayResponse();
+                resp.setId(302L);
+
+                org.springframework.data.domain.Page<HotelStayResponse> page = new org.springframework.data.domain.PageImpl<>(
+                                java.util.List.of(resp));
+
+                org.mockito.Mockito.doReturn(page).when(hotelStayService).search(any(), any(), any(), any(), any(),
+                                eq(HotelStayStatus.CHECKED_IN), any(org.springframework.data.domain.Pageable.class));
+
+                mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .get("/api/stay/search")
+                                .param("status", "CHECKED_IN")
+                                .param("page", "0")
+                                .param("size", "5"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.content[0].id").value(302));
+        }
+
+        @Test
+        void search_with_status_checkedOut_returns_paged_results() throws Exception {
+                HotelStayResponse resp = new HotelStayResponse();
+                resp.setId(303L);
+
+                org.springframework.data.domain.Page<HotelStayResponse> page = new org.springframework.data.domain.PageImpl<>(
+                                java.util.List.of(resp));
+
+                org.mockito.Mockito.doReturn(page).when(hotelStayService).search(any(), any(), any(), any(), any(),
+                                eq(HotelStayStatus.CHECKED_OUT), any(org.springframework.data.domain.Pageable.class));
+
+                mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .get("/api/stay/search")
+                                .param("status", "CHECKED_OUT")
+                                .param("page", "0")
+                                .param("size", "5"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.content[0].id").value(303));
         }
 }

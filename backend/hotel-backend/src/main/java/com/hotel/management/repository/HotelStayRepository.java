@@ -15,36 +15,36 @@ import org.springframework.data.repository.query.Param;
 @Repository
 public interface HotelStayRepository extends JpaRepository<HotelStay, Long> {
 
-    List<HotelStay> findByStatus(HotelStayStatus status);
+        List<HotelStay> findByStatus(HotelStayStatus status);
 
-    long countByStatus(HotelStayStatus status);
+        long countByStatus(HotelStayStatus status);
 
-    @Query("SELECT COALESCE(SUM(s.numberOfGuests),0) FROM HotelStay s WHERE s.status = :status")
-    Long sumNumberOfGuestsByStatus(@Param("status") HotelStayStatus status);
+        @Query("SELECT COALESCE(SUM(s.numberOfGuests),0) FROM HotelStay s WHERE s.status = :status")
+        Long sumNumberOfGuestsByStatus(@Param("status") HotelStayStatus status);
 
-    @Query("SELECT COUNT(s) FROM HotelStay s JOIN s.hotelGuest g WHERE s.status = :status AND g.hasCar = true")
-    Long countWithCarByStatus(@Param("status") HotelStayStatus status);
+        @Query("SELECT COUNT(s) FROM HotelStay s JOIN s.hotelGuest g WHERE s.status = :status AND g.hasCar = true")
+        Long countWithCarByStatus(@Param("status") HotelStayStatus status);
 
-    @Query("SELECT COUNT(s) FROM HotelStay s WHERE s.plannedStartDate <= :monthEnd AND s.plannedEndDate >= :monthStart")
-    Long countPlannedOverlappingPeriod(@Param("monthStart") LocalDate monthStart,
-            @Param("monthEnd") LocalDate monthEnd);
+        @Query("SELECT COUNT(s) FROM HotelStay s WHERE s.plannedStartDate <= :monthEnd AND s.plannedEndDate >= :monthStart")
+        Long countPlannedOverlappingPeriod(@Param("monthStart") LocalDate monthStart,
+                        @Param("monthEnd") LocalDate monthEnd);
 
-    @Query("select s from HotelStay s join s.hotelGuest g where " +
-            "(:name is null or lower(g.name) like lower(concat('%', :name, '%'))) and " +
-            "(:document is null or lower(g.document) like lower(concat('%', :document, '%'))) and " +
-            "(:phone is null or lower(g.phone) like lower(concat('%', :phone, '%'))) and " +
-            "(:start is null or s.plannedEndDate >= :start) and " +
-            "(:end is null or s.plannedStartDate <= :end) ")
-    Page<com.hotel.management.model.HotelStay> findByFilters(@Param("name") String name,
-            @Param("document") String document,
-            @Param("phone") String phone,
-            @Param("start") LocalDate start,
-            @Param("end") LocalDate end,
-            Pageable pageable);
+        @Query("select s from HotelStay s join s.hotelGuest g where " +
+                        "(:name is null or lower(g.name) like lower(concat('%', :name, '%'))) and " +
+                        "(:document is null or lower(g.document) like lower(concat('%', :document, '%'))) and " +
+                        "(:phone is null or lower(g.phone) like lower(concat('%', :phone, '%'))) and " +
+                        "(:start is null or s.plannedEndDate >= :start) and " +
+                        "(:end is null or s.plannedStartDate <= :end) and " +
+                        "(:status is null or s.status = :status) ")
+        Page<com.hotel.management.model.HotelStay> findByFilters(@Param("name") String name,
+                        @Param("document") String document,
+                        @Param("phone") String phone,
+                        @Param("start") LocalDate start,
+                        @Param("end") LocalDate end,
+                        @Param("status") com.hotel.management.model.HotelStayStatus status,
+                        Pageable pageable);
 
-    
-    
-    List<HotelStay> findByHotelGuest_IdAndStatus(Long hotelGuestId, HotelStayStatus status);
+        List<HotelStay> findByHotelGuest_IdAndStatus(Long hotelGuestId, HotelStayStatus status);
 
-    long countByHotelGuest_IdAndStatus(Long hotelGuestId, HotelStayStatus status);
+        long countByHotelGuest_IdAndStatus(Long hotelGuestId, HotelStayStatus status);
 }

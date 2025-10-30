@@ -41,6 +41,17 @@
     </div>
     <div class="filter__field">
       <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="filterStatus">
+          <mat-option value="">Todos</mat-option>
+          <mat-option value="RESERVED">Reservado</mat-option>
+          <mat-option value="CHECKED_IN">Check-in</mat-option>
+          <mat-option value="CHECKED_OUT">Check-out</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="filter__field">
+      <mat-form-field appearance="outline">
         <mat-label>Data início (planejado)</mat-label>
         <input matInput [matDatepicker]="startPicker" [(ngModel)]="filterStartDate" />
         <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
